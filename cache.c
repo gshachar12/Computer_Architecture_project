@@ -209,7 +209,7 @@ int fetch_block_from_cache(CACHE *requesting, CACHE *delivering,  uint32_t addre
         cache_read_data_from_bus(requesting, bus->bus_addr, bus);
         block_offset_counter++;
         num_words_sent++;
-        return ~ DATA_IS_READY; 
+        return 0; 
         }
         else // transaction finished
         {
@@ -220,7 +220,7 @@ int fetch_block_from_cache(CACHE *requesting, CACHE *delivering,  uint32_t addre
         delivering->tsram->cache[index].mesi_state = SHARED;  // delivering cache state is now shared
         log_cache_state(requesting);
         log_cache_state(delivering);
-        return DATA_IS_READY; 
+        return 1; 
         }
 
 
@@ -233,7 +233,7 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
     {
         printf("clock and stall counter: %d\n",main_memory_stalls_counter );
         main_memory_stalls_counter++; 
-        return ~ DATA_IS_READY; 
+        return 0; 
     }
 
     else
@@ -242,11 +242,12 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
 
         main_memory_stalls_counter = 0; 
         if(num_words_sent<BLOCK_SIZE){
+            printf("num words sent: %d\n",num_words_sent );
             send_data_from_main_memory_to_bus(main_memory, bus, address & ~3 );
             cache_read_data_from_bus(requesting, bus->bus_addr, bus);
             block_offset_counter++;
             num_words_sent++;
-            return ~ DATA_IS_READY; 
+            return 0; 
         }
         else // transaction finished
         {
@@ -255,7 +256,7 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
         num_words_sent=0;
         requesting->tsram->cache[index].mesi_state = EXCLUSIVE;  // Data is exclusive in the requesting cache
         log_cache_state(requesting);
-        return DATA_IS_READY; 
+        return 1; 
 
         }
 
@@ -305,6 +306,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                 {       
                     printf("DIDN'T FIND A BLOCK: FETCHING DATA FROM MAIN MEMORY\n");
                     caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
+                    printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
                 }
                 break;
 

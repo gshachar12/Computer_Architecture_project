@@ -35,15 +35,15 @@ int main() {
     printf("\nFinished initializing main_memory");
     initialize_mesi_bus(&mesi_bus, "mem_files/mesi_bus.txt");
     printf("\nFinished initializing mesi_bus\n");
-
+    printf("ack in main %d\n", (&cache0)->ack);
     int address = 0x00000000;
     int data;
     log_cache_state(&cache0);
     cache_read(&cache0, address, &data, &mesi_bus); //simulate read transaction ->should be read miss -> should fetch from main memory : suppose 20 cycles 
     printf("\nFinished reading\n");
-    for(int i=1; i<=19; i++)
+    for(int i=1; i<=25; i++)
        
-        snoop_bus(Cache_array, address, &mesi_bus, &main_memory); //main memory data should be fetched to cache0
+    snoop_bus(Cache_array, address, &mesi_bus, &main_memory); //main memory data should be fetched to cache0
     printf("Data after read op: %d\n", data);
 
 //     cache_read(&cache0, address, &data, &mesi_bus); //simulate read transaction ->should be read hit! 
