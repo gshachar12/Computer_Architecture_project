@@ -240,7 +240,6 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
     {
         printf("finished stalling: %d\n",main_memory_stalls_counter );
 
-        main_memory_stalls_counter = 0; 
         if(num_words_sent<BLOCK_SIZE){
             printf("num words sent: %d\n",num_words_sent );
             send_data_from_main_memory_to_bus(main_memory, bus, address & ~3 );
@@ -254,11 +253,14 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
         bus->bus_cmd = NO_COMMAND;
         block_offset_counter = 0; 
         num_words_sent=0;
+        main_memory_stalls_counter = 0; 
+
         requesting->tsram->cache[index].mesi_state = EXCLUSIVE;  // Data is exclusive in the requesting cache
         log_cache_state(requesting);
         return 1; 
 
         }
+
 
     }
 }
