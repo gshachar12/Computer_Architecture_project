@@ -24,9 +24,9 @@
 //     int main_memory_stalls_counter = 0; 
 // }Global; 
 
-
+    extern snoop_bus_request;
     extern int num_words_sent; 
-     extern int block_offset_counter; 
+     extern uint32_t block_offset_counter; 
      extern int main_memory_stalls_counter; 
 
 // Cache Line structure

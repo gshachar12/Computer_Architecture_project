@@ -11,7 +11,7 @@
 #define TAG_BITS (32 - INDEX_BITS - BLOCK_OFFSET_BITS) // Assuming 32-bit address
 #define NUM_CACHES 2
  int num_words_sent=0; 
- int block_offset_counter=0; 
+ uint32_t block_offset_counter=0; 
  int main_memory_stalls_counter=0; 
 
 
@@ -39,14 +39,16 @@ void get_cache_address_parts(uint32_t address, uint32_t *tag, uint32_t *index, u
 }
 // Function to log cache state to a text file
 void log_mesibus(MESI_bus *bus, int cycle) {
-    // Log DSRAM state
+    // Check if the logfile is initialized
     if (bus->logfile == NULL) {
         printf("Error: Logfile not initialized for DSRAM.\n");
         return; // Prevent further execution if logfile is not available
     }
 
-    // Log the bus details in the required format
-    fprintf(bus->logfile, "%d   %d    %d   0x%08X   %d       %d     %d\n", 
+ 
+    // Log the bus details in a cleaner format with two-digit padding for numbers < 10
+    if (bus->bus_cmd != 0) {
+     fprintf(bus->logfile, "%d   %d    %d   0x%08X   %d       %d     %d\n", 
             cycle, 
             bus->bus_origid, 
             bus->bus_cmd, 
@@ -55,7 +57,9 @@ void log_mesibus(MESI_bus *bus, int cycle) {
             bus->bus_shared, 
             bus->bus_requesting_id 
             );
+    }
 }
+
 
 // Function to log cache state to a text file
 void log_cache_state(CACHE* cache) {
@@ -112,7 +116,6 @@ void send_data_from_main_memory_to_bus(MainMemory *main_memory, MESI_bus *bus, i
     bus->bus_addr = address;
     bus->bus_origid = 4;
     printf("Data sent to the bus from main memory! Data: %u\n", bus->bus_data);
-    log_mesibus(bus, 0);
 }
 
 /******************************************************************************
@@ -124,7 +127,7 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
     printf("check_shared_bus started: found data in another cache? ");
     uint32_t tag, index, block_offset;
     get_cache_address_parts(address, &tag, &index, &block_offset);
-
+    printf("%s origid: %d %s, ", RED, origid, WHITE);
     // Dynamically allocate memory for cache_indexes array based on found_count
     int *cache_indexes = NULL;
     int found_count = 0;
@@ -172,7 +175,7 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
     bus->bus_origid = origid;
     bus->bus_cmd = cmd;
     bus->bus_addr = addr;
-    log_mesibus(bus, 0);
+    bus->bus_requesting_id = origid; 
 }
 
 
@@ -188,7 +191,6 @@ void send_data_to_bus(MESI_bus *bus, int data, int origid, int bus_shared, int a
     bus->bus_shared = bus_shared;
     bus->bus_addr = address;
     bus->bus_requesting_id = requesting_id;   
-    log_mesibus(bus, 0);
 }
 
 void cache_read_data_from_bus(CACHE *cache, int address, MESI_bus *bus)
@@ -205,7 +207,7 @@ void cache_read_data_from_bus(CACHE *cache, int address, MESI_bus *bus)
 int fetch_block_from_cache(CACHE *requesting, CACHE *delivering,  uint32_t address, MESI_bus *bus, uint32_t index)
 {
         if(num_words_sent<BLOCK_SIZE){
-        send_data_to_bus(bus, delivering->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, address & ~3, requesting->cache_id);
+        send_data_to_bus(bus, delivering->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, (address & ~3)+block_offset_counter, requesting->cache_id);
         cache_read_data_from_bus(requesting, bus->bus_addr, bus);
         block_offset_counter++;
         num_words_sent++;
@@ -241,8 +243,8 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
         printf("finished stalling: %d\n",main_memory_stalls_counter );
 
         if(num_words_sent<BLOCK_SIZE){
-            printf("num words sent: %d\n",num_words_sent );
-            send_data_from_main_memory_to_bus(main_memory, bus, address & ~3 );
+            printf("blocks sent: %d\n",block_offset_counter );
+            send_data_from_main_memory_to_bus(main_memory, bus, (address & ~3) + block_offset_counter);
             cache_read_data_from_bus(requesting, bus->bus_addr, bus);
             block_offset_counter++;
             num_words_sent++;
@@ -254,7 +256,7 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
         block_offset_counter = 0; 
         num_words_sent=0;
         main_memory_stalls_counter = 0; 
-
+        
         requesting->tsram->cache[index].mesi_state = EXCLUSIVE;  // Data is exclusive in the requesting cache
         log_cache_state(requesting);
         return 1; 
@@ -272,24 +274,27 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
 * maybe they need to send their data to the bus, or invalidate their cache line 
 * should occur every cycle
 *******************************************************************************/
-int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main_memory) { //change to pointers
+int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main_memory, int clock_cycle) { //change to pointers
     uint32_t tag, index, block_offset;
     get_cache_address_parts(address, &tag, &index, &block_offset);
     int *caches_owning_block_id_array;
      
     MESI_bus* data_path_bus;
     // Debug print to see cache address parts
+    
         switch (bus->bus_cmd) 
         {
             case NO_COMMAND:
                 // No command, just snooping
                 printf("Snooping NO_COMMAND: No operation.\n");
                 bus->bus_shared = 0;  // Data is not shared
+                bus->bus_addr = 0;
                 break;
             case BUS_RD:
                 // Bus read operation : When a BusRd (Bus Read) transaction occurs on the bus, it indicates that a processor or cache is requesting a block of data from the memory system.
                 printf("Snooping BUS_READ\n");
-                
+                    printf("Caches Owning Block IDs:\n");
+                  
                 caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, address); // Check if the data is in another cache, if yes, return the cache id
                 if (caches_owning_block_id_array != NULL) //block found
                 {
@@ -382,6 +387,8 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                 printf("Unknown bus operation.\n");
             break;
 
+
+
             return caches[bus->bus_requesting_id]->ack; 
         }
 }
@@ -430,7 +437,7 @@ bool cache_read(CACHE* cache,  uint32_t address, uint32_t *data, MESI_bus *mesi_
     // 2.cache miss: send busrd transaction
 
     cache_hit = tsram_line->mesi_state != INVALID && tsram_line->tag == tag;
-
+    
     if (cache_hit) //cache hit, valid block
     {
         *data = dsram_line->data[block_offset];

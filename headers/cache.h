@@ -32,7 +32,7 @@ bool cache_write(CACHE *cache, uint32_t address, MESI_bus *mesi_bus, int data);
 
 //int read_from_main_memory(int *main_memory, int address);
 
-int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main_memory);
+int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main_memory, int clock_cycle);
 //void init_caches(DSRAM dsrams[], TSRAM tsrams[]);
 
 int* check_shared_bus(CACHE *caches[], int origid, int address);
