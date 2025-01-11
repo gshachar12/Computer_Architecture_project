@@ -492,13 +492,13 @@ bool cache_write(CACHE* cache, uint32_t address, MESI_bus *mesi_bus, int data) {
 
     // Check if it's a cache hit
     if (tsram_line->mesi_state != INVALID && tsram_line->tag == tag) {
-        printf("cache hit, tag:%d, tsram_state:%d\n", tsram_line->tag, tsram_line->mesi_state);
+        //printf("cache hit, tag:%d, tsram_state:%d\n", tsram_line->tag, tsram_line->mesi_state);
         if(tsram_line->mesi_state == MODIFIED || tsram_line->mesi_state == EXCLUSIVE)
         {
             printf("Cache write hit! Data is in state:%d, writing to cache...\n", tsram_line->mesi_state);
             dsram_line->data[block_offset] = data; 
             tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-            printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+            printf("Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
             log_cache_state(cache);
             return 1;
 
