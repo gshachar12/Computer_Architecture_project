@@ -59,8 +59,12 @@ int main() {
        {
     snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
     log_mesibus(&mesi_bus, clock);}
-
-
+      printf("\n-----------------------------------------------------------------------------------------\n");
+      printf("cache_write\n");
+   printf("mesinbys parametes: %d %d %d\n", mesi_bus.bus_data, mesi_bus.bus_addr, mesi_bus.bus_origid);
+    cache_write(&cache0, address, &mesi_bus, 42); //simulate write transaction ->should be write hit!
+      printf("\n-----------------------------------------------------------------------------------------\n");
+   snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 //     cache_read(&cache0, address, &data, &mesi_bus); //simulate read transaction ->should be read hit! 
 //     printf("Data after read op: %d\n", data);
 //     snoop_bus(Cache_array, address, &mesi_bus, &main_memory); //cache0 should send data to bus

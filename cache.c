@@ -127,7 +127,7 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
     printf("check_shared_bus started: found data in another cache? ");
     uint32_t tag, index, block_offset;
     get_cache_address_parts(address, &tag, &index, &block_offset);
-    printf("%s origid: %d %s, ", RED, origid, WHITE);
+    //printf("%s origid: %d %s, ", RED, origid, WHITE);
     // Dynamically allocate memory for cache_indexes array based on found_count
     int *cache_indexes = NULL;
     int found_count = 0;
@@ -138,7 +138,7 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
         CacheLine_TSRAM *tsram_line = &(caches[i]->tsram->cache[index]);
         if (tsram_line->mesi_state != INVALID && tsram_line->tag == tag) {  // Assuming 0 means INVALID
             // Data found in cache i 
-            printf("Bus: Data found in cache %d\n", i);
+            //printf("Bus: Data found in cache %d\n", i);
             // Dynamically resize the cache_indexes array to hold the found cache index
             cache_indexes = realloc(cache_indexes, (found_count + 1) * sizeof(int));
             if (cache_indexes == NULL) {
@@ -159,7 +159,7 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
     // Print and return the array of cache indexes
     printf("YES\n");
     for (int i = 0; i < found_count; i++) {
-        printf("Cache index: %d\n", cache_indexes[i]);
+        printf("Caches indexs that own the block: %d\n", cache_indexes[i]);
     }
     return cache_indexes;
 }
@@ -171,11 +171,24 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
 * Description: send command to the bus
 *******************************************************************************/
 void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
-    bus->bus_data = 0; //arbitrary value
+    printf("Sending operation to the bus: origid: %d, cmd: %d, addr: %d, requesting_id: %d\n", origid, cmd, addr, origid);
+    printf("mesibus == NULL? %s\n", bus == NULL ? "YES" : "NO");
+    printf("mesibus_data = %d\n", bus->bus_data);
+    // Set bus data to arbitrary value
+    bus->bus_data = 0;
+    printf("bus_data: %d\n", bus->bus_data);
+
+    // Set bus fields
     bus->bus_origid = origid;
     bus->bus_cmd = cmd;
     bus->bus_addr = addr;
-    bus->bus_requesting_id = origid; 
+    bus->bus_requesting_id = origid;
+
+    // Print the values after assigning them
+    printf("bus_origid: %d\n", bus->bus_origid);
+    printf("bus_cmd: %d\n", bus->bus_cmd);
+    printf("bus_addr: %d\n", bus->bus_addr);
+    printf("bus_requesting_id: %d\n", bus->bus_requesting_id);
 }
 
 
@@ -322,20 +335,24 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                 // Bus read exclusive operation : When a BusRdX (Bus Read Exclusive) transaction occurs on the bus, it indicates that a processor or cache is requesting a block of data from the memory system with the intent to write to it.
                 printf("Snooping BUS_READ_EXCLUSIVE\n");
                 caches_owning_block_id_array = check_shared_bus(caches, bus->bus_requesting_id, address); // Check if the data is in another cache, if yes, return the cache id
+                //printf("Caches Owning Block IDs: %d\n", caches_owning_block_id_array[1]);
                 if (caches_owning_block_id_array != NULL) {
                     // Data found in another cache
 
                     if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state == SHARED){ ////////should be a loop on the array!!!!!!!!!!!!!!!
                         {
-                            printf("FOUND A SHARED BLOCK: bring it to the requesting cache! invalidate others", caches_owning_block_id_array);
-                            for(int i = 0; i < sizeof(caches_owning_block_id_array); i++)
+                            printf("FOUND A SHARED BLOCK: bring it to the requesting cache! invalidate others\n", caches_owning_block_id_array);
+                            //printf("size of array: %d\n", sizeof(caches_owning_block_id_array));
+                            for(int i = 0; (caches_owning_block_id_array[i] <= 4 && caches_owning_block_id_array[i] >= 0);  i++)
                             {   
                                 printf("data in cache %d is invalid, INVALIDATE block number: %d\n", caches_owning_block_id_array[i], index);
                                 caches[caches_owning_block_id_array[i]]->tsram->cache[index].mesi_state = INVALID;  // Data is invalid in the cache with the shared data
+                                log_cache_state(caches[caches_owning_block_id_array[i]]);
                             }
                         
                             caches[bus->bus_requesting_id]->ack= fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)                    
+                            log_cache_state(caches[bus->bus_requesting_id]);
                         }
                     }
 
@@ -468,7 +485,6 @@ bool cache_write(CACHE* cache, uint32_t address, MESI_bus *mesi_bus, int data) {
     uint32_t tag, index, block_offset;
     int origid = cache->cache_id; 
     get_cache_address_parts(address, &tag, &index, &block_offset);
-
     CacheLine *dsram_line = &cache->dsram->cache[index];
     CacheLine_TSRAM *tsram_line = &cache->tsram->cache[index];
     uint64_t cycles = 0;
@@ -476,12 +492,30 @@ bool cache_write(CACHE* cache, uint32_t address, MESI_bus *mesi_bus, int data) {
 
     // Check if it's a cache hit
     if (tsram_line->mesi_state != INVALID && tsram_line->tag == tag) {
-        // Cache hit! Update the cache line
+        printf("cache hit, tag:%d, tsram_state:%d\n", tsram_line->tag, tsram_line->mesi_state);
+        if(tsram_line->mesi_state == MODIFIED || tsram_line->mesi_state == EXCLUSIVE)
+        {
+            printf("Cache write hit! Data is in state:%d, writing to cache...\n", tsram_line->mesi_state);
+            dsram_line->data[block_offset] = data; 
+            tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
+            printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+            log_cache_state(cache);
+            return 1;
+
+        }
+        else {
+            printf("Cache write miss! sending busrdx transaction...\n");
+            //cache miss! send busrdx to the bus. will be modified later
+            // Check if the cache line is dirty and needs to be written back to memory
+            log_cache_state(cache);  // Log both DSRAM and TSRAM states
+            send_op_to_bus(mesi_bus, origid, BUS_RDX, address); //send busrdx transaction
+            return 0;
+        }
         dsram_line->data[block_offset] = data; 
         tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-        send_op_to_bus(mesi_bus, origid, BUS_RDX, address); //send busrdx transaction
-        log_cache_state(cache);  // Log both DSRAM and TSRAM states
         printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+        send_op_to_bus(mesi_bus, origid, BUS_RDX, address); //send busrdx transaction
+        //printf("ack: %d\n",cache->ack);
         return 1;
 
         }
