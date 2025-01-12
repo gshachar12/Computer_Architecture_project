@@ -314,19 +314,25 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                     // Data found in another cache
                     if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state != INVALID)
                     { // found the valid data in another cache 
-
-                    printf("FOUND A VALID BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
-                    caches[bus->bus_requesting_id]->ack=fetch_block_from_cache(caches[bus->bus_requesting_id],caches[bus->bus_requesting_id], address, bus, index);
-
+                        if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state != MODIFIED)
+                        {
+                        printf("FOUND A VALID BLOCK(not modified!): FETCHING FROM MAIN MEMORY");
+                        caches[bus->bus_requesting_id]->ack = fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus, index);
+                        }
+                    else
+                    {
+                        printf("FOUND A MODIFIED BLOCK: INITIATING FLUSH");//?
+                        //caches[bus->bus_requesting_id]->ack = fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
                     }
+
 
                 }
 
                 else
                 {       
-                    printf("DIDN'T FIND A BLOCK: FETCHING DATA FROM MAIN MEMORY\n");
+                    printf("DIDN'T FIND A BLOCK(INVALID): FETCHING DATA FROM MAIN MEMORY\n");
                     caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
-                    printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
+                    //printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
                 }
                 break;
 
@@ -350,7 +356,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                                 log_cache_state(caches[caches_owning_block_id_array[i]]);
                             }
                         
-                            caches[bus->bus_requesting_id]->ack= fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
+                            caches[bus->bus_requesting_id]->ack= caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)                    
                             log_cache_state(caches[bus->bus_requesting_id]);
                         }
@@ -360,7 +366,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                         {
                             caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state = INVALID;  // Data is invalid in the cache with the shared data
                             printf("FOUND AN EXCLUSIVE BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array);
-                            caches[bus->bus_requesting_id]->ack=fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
+                            caches[bus->bus_requesting_id]->ack=fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
 
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)
                             
