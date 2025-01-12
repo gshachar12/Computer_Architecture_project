@@ -24,10 +24,10 @@
 //     int main_memory_stalls_counter = 0; 
 // }Global; 
 
-    extern snoop_bus_request;
-    extern int num_words_sent; 
-     extern uint32_t block_offset_counter; 
-     extern int main_memory_stalls_counter; 
+extern int snoop_bus_request;
+extern int num_words_sent; 
+extern uint32_t block_offset_counter; 
+extern int main_memory_stalls_counter; 
 
 // Cache Line structure
 typedef struct cacheLine{

@@ -248,13 +248,12 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
     {
         printf("clock and stall counter: %d\n",main_memory_stalls_counter );
         main_memory_stalls_counter++; 
+        cache_read_data_from_bus(requesting, bus->bus_addr, bus);
         return 0; 
     }
 
     else
     {
-        printf("finished stalling: %d\n",main_memory_stalls_counter );
-
         if(num_words_sent<BLOCK_SIZE){
             printf("blocks sent: %d\n",block_offset_counter );
             send_data_from_main_memory_to_bus(main_memory, bus, (address & ~3) + block_offset_counter);
@@ -278,6 +277,48 @@ int fetch_block_from_main_memory(CACHE *requesting, MainMemory* main_memory, uin
 
 
     }
+}
+
+
+int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_memory, uint32_t address, MESI_bus *bus, uint32_t index)
+{ 
+    printf("flushing from cache: %d to %d", modified_cache->cache_id, requesting->cache_id);
+    send_op_to_bus(bus, modified_cache->cache_id, FLUSH, address); // send flush command
+        if(main_memory_stalls_counter<MAIN_MEMORY_STALLS) //empty stalls for fetching data from main memory
+        {
+            printf("clock and stall counter: %d\n",main_memory_stalls_counter );
+            main_memory_stalls_counter++; 
+            
+            send_data_to_bus(bus, modified_cache->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 
+                                                1, (address & ~3)+block_offset_counter, requesting->cache_id);  
+            return 0;  
+        }
+ 
+        else // transaction to bus finished finished
+        {
+            block_offset_counter = 0; 
+            num_words_sent=0;
+            return 1; 
+            if(num_words_sent<BLOCK_SIZE)
+            {
+                send_data_to_bus(bus, modified_cache->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, (address & ~3)+block_offset_counter, requesting->cache_id);
+                cache_read_data_from_bus(requesting, bus->bus_addr, bus);
+                main_memory->memory_data[bus->bus_addr] = bus->bus_data;
+                block_offset_counter++;
+                num_words_sent++;
+                return 0;
+            }
+            else
+            {
+                printf("finished stalling: %d\n",main_memory_stalls_counter );
+                bus->bus_cmd = NO_COMMAND;
+                block_offset_counter = 0; 
+                num_words_sent=0;
+                main_memory_stalls_counter = 0; 
+                return 1; 
+            }
+        }
+
 }
 
 /******************************************************************************
@@ -314,25 +355,19 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                     // Data found in another cache
                     if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state != INVALID)
                     { // found the valid data in another cache 
-                        if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state != MODIFIED)
-                        {
-                        printf("FOUND A VALID BLOCK(not modified!): FETCHING FROM MAIN MEMORY");
-                        caches[bus->bus_requesting_id]->ack = fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus, index);
-                        }
-                    else
-                    {
-                        printf("FOUND A MODIFIED BLOCK: INITIATING FLUSH");//?
-                        //caches[bus->bus_requesting_id]->ack = fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
-                    }
 
+                    printf("FOUND A VALID BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
+                    caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
+
+                    }
 
                 }
 
                 else
                 {       
-                    printf("DIDN'T FIND A BLOCK(INVALID): FETCHING DATA FROM MAIN MEMORY\n");
+                    printf("DIDN'T FIND A BLOCK: FETCHING DATA FROM MAIN MEMORY\n");
                     caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
-                    //printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
+                    printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
                 }
                 break;
 
@@ -356,7 +391,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                                 log_cache_state(caches[caches_owning_block_id_array[i]]);
                             }
                         
-                            caches[bus->bus_requesting_id]->ack= caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
+                            caches[bus->bus_requesting_id]->ack= fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)                    
                             log_cache_state(caches[bus->bus_requesting_id]);
                         }
@@ -366,7 +401,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                         {
                             caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state = INVALID;  // Data is invalid in the cache with the shared data
                             printf("FOUND AN EXCLUSIVE BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array);
-                            caches[bus->bus_requesting_id]->ack=fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
+                            caches[bus->bus_requesting_id]->ack=fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
 
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)
                             
@@ -376,7 +411,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
 
                     else if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state == MODIFIED){
                             printf("FOUND AN EXCLUSIVE BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array);
-                            caches[bus->bus_requesting_id]->ack=fetch_block_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], address, bus, index);
+                            caches[bus->bus_requesting_id]->ack=flush_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], main_memory, address, bus, index);
                             bus->bus_cmd = FLUSH;
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)
                             caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state = INVALID;  // Data is invalid in the cache with the shared data
@@ -388,7 +423,6 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                         //fetch from main memory 
                         caches[bus->bus_requesting_id]->ack=fetch_block_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus, index); 
                         caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache
-                        log_cache_state(caches[bus->bus_requesting_id]);
                     }
                     break;
 
@@ -415,28 +449,6 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
             return caches[bus->bus_requesting_id]->ack; 
         }
 }
-
-
-// int read_from_main_memory(int *main_memory, int address) {
-//     // Check if the address is within the valid range
-//     if (address < 0 || address >= MAIN_MEMORY_SIZE) {
-//         fprintf(stderr, "Error: Invalid memory address %d\n", address);
-//         exit(EXIT_FAILURE); // Exit the program or handle the error appropriately
-//     }
-
-//     // Return the value at the specified memory address
-//     return (int)main_memory[address];
-// }
-
-// // Function to print the main memory to a text file
-// void write_main_memory_to_file(FILE *file) {
-//     fprintf(file, "Main Memory State:\n");
-//     for (int i = 0; i < MAIN_MEMORY_SIZE; i++) {
-//         // Print memory in a readable format (e.g., words in hex)
-//         fprintf(file, "Address 0x%08X: 0x%08X\n", i, main_memory[i]);
-//     }
-//     fprintf(file, "End of Main Memory State\n\n");
-// }
 
 
 /******************************************************************************
@@ -487,7 +499,7 @@ bool cache_read(CACHE* cache,  uint32_t address, uint32_t *data, MESI_bus *mesi_
 * Description: write command. first check if the data is in the cache, if not, send a bus transaction(BUSRDX).
 * after that, all other caches will see the transaction. if it's in another cache, they will send the data to the bus and shared = 1. then we call read_from_bus
 *******************************************************************************/
-bool cache_write(CACHE* cache, uint32_t address, MESI_bus *mesi_bus, int data) {
+bool cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
     uint32_t tag, index, block_offset;
     int origid = cache->cache_id; 
     get_cache_address_parts(address, &tag, &index, &block_offset);
@@ -504,24 +516,20 @@ bool cache_write(CACHE* cache, uint32_t address, MESI_bus *mesi_bus, int data) {
             printf("Cache write hit! Data is in state:%d, writing to cache...\n", tsram_line->mesi_state);
             dsram_line->data[block_offset] = data; 
             tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-            printf("Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+            printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
             log_cache_state(cache);
             return 1;
 
         }
         else {
-            printf("Cache write miss! sending busrdx transaction...\n");
+            printf("Cache write hit! found a shared block, sending busrdx transaction...\n");
             //cache miss! send busrdx to the bus. will be modified later
             // Check if the cache line is dirty and needs to be written back to memory
             log_cache_state(cache);  // Log both DSRAM and TSRAM states
             send_op_to_bus(mesi_bus, origid, BUS_RDX, address); //send busrdx transaction
-            return 0;
+            return BUS_RDX;
         }
-        dsram_line->data[block_offset] = data; 
-        tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-        printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
-        send_op_to_bus(mesi_bus, origid, BUS_RDX, address); //send busrdx transaction
-        //printf("ack: %d\n",cache->ack);
+
         return 1;
 
         }
@@ -551,16 +559,5 @@ void write_after_busrdx(CACHE *cache, int origid, uint32_t address, uint32_t dat
     tsram_line->mesi_state = MODIFIED;
     cache->dsram->cache[index].data[block_offset] = data;
     log_cache_state(cache);
-}
-
-/******************************************************************************
-* Function: write_data_to_main_memory_from_bus
-*
-* Description: write the data to main memory after a flush operation
-*******************************************************************************/
-void write_data_to_main_memory_from_bus(MainMemory *main_memory, uint32_t address, MESI_bus *mesi_bus)
-{
-    main_memory->memory_data[address] = mesi_bus->bus_data;
-    printf("data written to main memory! Data: %u, Address: %x\n", mesi_bus->bus_data, address);
 }
 
