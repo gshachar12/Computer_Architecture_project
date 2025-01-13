@@ -40,49 +40,79 @@ int main() {
     int data;
     int clock =0; 
     
-    log_cache_state(&cache0);
     cache_read(&cache0, address, &data, &mesi_bus); //simulate read transaction ->should be read miss -> should fetch from main memory : suppose 20 cycles 
-    printf("\nFinished reading\n");
-    for(clock=0; clock<=25; clock++)
-       {
-    snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
-    log_mesibus(&mesi_bus, clock);}
-    printf("\n-----------------------------------------------------------------------------------------\n");
+    log_mesibus(&mesi_bus, clock);
 
-    int init_clock = clock;
-    cache_read(&cache1, address, &data, &mesi_bus); //simulate read transaction ->should be read miss -> should fetch from main memory : suppose 20 cycles 
-    printf("\n-----------------------------------------------------------------------------------------\n");
+   // read from empty cache 0 address 0
+   int counter =0; 
+   while(!cache0.ack)
+      {
+          clock++;
+         snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+         log_mesibus(&mesi_bus, clock);
+      }
+   printf("\n-----------------------------------------------------------------------------------------\n");
 
-    printf("Data after read op: %d\n", data);
+   // read cache 1 address 0 -  
+
+   clock++;
+   cache_read(&cache1, address, &data, &mesi_bus); //simulate read transaction ->should be read miss -> should fetch from main memory : suppose 20 cycles 
+   log_mesibus(&mesi_bus, clock);
+
+   printf("\n-----------------------------------------------------------------------------------------\n");
+
+   printf("Data after read op: %d\n", data);
 
    while(!cache1.ack)
    {
+      clock++;
       snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
       log_mesibus(&mesi_bus, clock);
-      clock++;
+      
     }
    printf("\n-----------------------------------------------------------------------------------------\n");
    printf("cache_write\n");
-   //printf("mesinbys parametes: %d %d %d\n", mesi_bus.bus_data, mesi_bus.bus_addr, mesi_bus.bus_origid);
    int data0 = 42;
    cache_write(&cache0, address, data0, &mesi_bus); //simulate write transaction ->should be write hit!
-   printf("\n-----------------------------------------------------------------------------------------\n");
-   snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
-   log_mesibus(&mesi_bus, clock++);
-   printf("cache_write2\n");
-   log_cache_state(&cache1);
-   int data1 = 123;
-   cache_write(&cache1, address, data1, &mesi_bus); //simulate read transaction ->should be read hit! 
-   while(!cache1.ack)
+   log_mesibus(&mesi_bus, clock);
+
+     while(!cache0.ack)
    {
+      clock++;
       snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
-      log_mesibus(&mesi_bus, clock++);
+
+      log_mesibus(&mesi_bus, clock);
    }
 
+   printf("\n-----------------------------------------------------------------------------------------\n");
 
-   //printf("Data after read op: %d\n", data);
-//     snoop_bus(Cache_array, address, &mesi_bus, &main_memory); //cache0 should send data to bus
+   cache_write(&cache1, address, 69, &mesi_bus); //simulate write transaction ->should be write hit!
+   log_mesibus(&mesi_bus, clock);
+   
+   while(!cache1.ack)
+   {
+      clock++;
 
-//     cache_read(&cache1, address, &data, &mesi_bus); //simulate read transaction ->should be read miss -> should fetch from cache0! : suppose 4 cycles
-//     snoop_bus(Cache_array, address, &mesi_bus, &main_memory); //cache0 should send data to bus
+      printf("\n\n\nclock cycle ack %d\n\n\n", clock);
+
+      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      log_mesibus(&mesi_bus, clock);
+   }
+   clock++;
+   log_cache_state(&cache0);
+   log_cache_state(&cache1);
+
+//   snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+//   log_mesibus(&mesi_bus, clock++);
+   // printf("cache_write2\n");
+   // log_cache_state(&cache1);
+   // int data1 = 123;
+   // cache_write(&cache1, address, data1, &mesi_bus); //simulate read transaction ->should be read hit! 
+   // while(!cache1.ack)
+   // {
+   //    snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+   //    log_mesibus(&mesi_bus, clock++);
+   // }
+
+
  }
