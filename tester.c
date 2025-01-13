@@ -70,37 +70,37 @@ int main() {
       log_mesibus(&mesi_bus, clock);
       
     }
-   printf("\n-----------------------------------------------------------------------------------------\n");
-   printf("cache_write\n");
-   int data0 = 42;
-   cache_write(&cache0, address, data0, &mesi_bus); //simulate write transaction ->should be write hit!
-   log_mesibus(&mesi_bus, clock);
+   // printf("\n-----------------------------------------------------------------------------------------\n");
+   // printf("cache_write\n");
+   // int data0 = 42;
+   // cache_write(&cache0, address, data0, &mesi_bus); //simulate write transaction ->should be write hit!
+   // log_mesibus(&mesi_bus, clock);
 
-     while(!cache0.ack)
-   {
-      clock++;
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+   //   while(!cache0.ack)
+   // {
+   //    clock++;
+   //    snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 
-      log_mesibus(&mesi_bus, clock);
-   }
+   //    log_mesibus(&mesi_bus, clock);
+   // }
 
-   printf("\n-----------------------------------------------------------------------------------------\n");
+   // printf("\n-----------------------------------------------------------------------------------------\n");
 
-   cache_write(&cache1, address, 69, &mesi_bus); //simulate write transaction ->should be write hit!
-   log_mesibus(&mesi_bus, clock);
+   // cache_write(&cache1, address, 69, &mesi_bus); //simulate write transaction ->should be write hit!
+   // log_mesibus(&mesi_bus, clock);
    
-   while(!cache1.ack)
-   {
-      clock++;
+   // while(!cache1.ack)
+   // {
+   //    clock++;
 
-      printf("\n\n\nclock cycle ack %d\n\n\n", clock);
+   //    printf("\n\n\nclock cycle ack %d\n\n\n", clock);
 
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
-      log_mesibus(&mesi_bus, clock);
-   }
-   clock++;
-   log_cache_state(&cache0);
-   log_cache_state(&cache1);
+   //    snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+   //    log_mesibus(&mesi_bus, clock);
+   // }
+   // clock++;
+   // log_cache_state(&cache0);
+   // log_cache_state(&cache1);
 
 //   snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 //   log_mesibus(&mesi_bus, clock++);

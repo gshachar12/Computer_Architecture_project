@@ -282,7 +282,8 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
      
     MESI_bus* data_path_bus;
     // Debug print to see cache address parts
-    
+        caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, address); // Check if the data is in another cache, if yes, return the cache id
+
         switch (bus->bus_cmd) 
         {
             case NO_COMMAND:
@@ -299,7 +300,6 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                     caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, address, bus,  index);
                     return 0;
                 }
-                caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, address); // Check if the data is in another cache, if yes, return the cache id
                 if (caches_owning_block_id_array != NULL) //block found
                 {
                     // Data found in another cache
@@ -345,7 +345,6 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                 printf("Snooping BUS_READ_EXCLUSIVE\n");
 
                 bus->wr = 1; 
-                caches_owning_block_id_array = check_shared_bus(caches, bus->bus_requesting_id, address); // Check if the data is in another cache, if yes, return the cache id
                 //printf("Caches Owning Block IDs: %d\n", caches_owning_block_id_array[1]);
                 if (caches_owning_block_id_array != NULL) {
                     // Data found in another cache
@@ -405,7 +404,7 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                     caches[bus->bus_requesting_id]->ack= flush_from_cache(caches[bus->bus_requesting_id], caches[bus->bus_origid], main_memory, address, bus,  index);
                 
                 if(caches[bus->bus_requesting_id]->ack)
-                {printf("sdfghxcvgbhnkmvcfghklkwertyuioknbfde, wr %d ", bus->wr);
+                {
                     if(bus->wr)
                     {
                         
@@ -415,8 +414,8 @@ int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main
                     }
 
                     log_cache_state(caches[bus->bus_requesting_id]);
-                    if(bus->bus_origid!=4)
-                        log_cache_state(caches[bus->bus_origid]);
+                    if (caches_owning_block_id_array!=NULL)
+                        log_cache_state(caches[caches_owning_block_id_array[0]]);
                 }
                 break;
 
