@@ -74,6 +74,9 @@ void initialize_mesi_bus(MESI_bus *bus, const char *log_filename)
     bus->bus_addr = 0;       // Set the address for the bus operation
     bus->bus_data = 0;          // Set the data for write operations (optional)
     bus->bus_shared = 0;      // Set shared state for read operations (1 if shared, 0 if exclusive)
+    bus->wr=0;
+    bus->bus_write_buffer=0;
+    bus->stall=0;
     bus->logfile = fopen(log_filename, "w");
     if (bus->logfile == NULL) {
         perror("Error opening log file for DSRAM");

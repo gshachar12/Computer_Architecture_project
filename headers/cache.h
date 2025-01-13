@@ -28,7 +28,7 @@ void write_after_busrdx(CACHE *requesting, int origid, uint32_t address, uint32_
 bool cache_read(CACHE *cache, uint32_t address, uint32_t *data, MESI_bus *mesi_bus);
 
 // Cache write operation
-bool cache_write(CACHE *cache, uint32_t address, MESI_bus *mesi_bus, int data);
+bool cache_write(CACHE *cache, uint32_t address, int data, MESI_bus *mesi_bus);
 
 //int read_from_main_memory(int *main_memory, int address);
 

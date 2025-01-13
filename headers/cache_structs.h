@@ -15,7 +15,7 @@
 #define BLOCK_OFFSET_BITS 2        // log2(4) = 2 bits to index a word within a block
 #define INDEX_BITS 6               // log2(64) = 6 bits for cache index
 #define TAG_BITS (32 - INDEX_BITS - BLOCK_OFFSET_BITS) // Assuming 32-bit address
-#define MAIN_MEMORY_STALLS 16
+#define MAIN_MEMORY_STALLS 15
 #define DATA_IS_READY 1
 
 // struct global{
@@ -24,10 +24,10 @@
 //     int main_memory_stalls_counter = 0; 
 // }Global; 
 
-    extern snoop_bus_request;
-    extern int num_words_sent; 
-     extern uint32_t block_offset_counter; 
-     extern int main_memory_stalls_counter; 
+extern int snoop_bus_request;
+extern int num_words_sent; 
+extern uint32_t block_offset_counter; 
+extern int main_memory_stalls_counter; 
 
 // Cache Line structure
 typedef struct cacheLine{
@@ -83,10 +83,11 @@ typedef struct
     BusOperation bus_cmd; // 0: no command, 1: busrd, 2:busrdx, 3:flush
     int bus_addr; //word address
     int bus_data;// word data
+    int wr;
+    int stall;
     int bus_shared; // set to 1 when answering a BusRd transaction if any of the cores has the data in the cache, otherwise set to 0.
-
     int bus_requesting_id; /********************************************************** */
-
+    int bus_write_buffer;
     FILE *logfile;
 } MESI_bus;
 
