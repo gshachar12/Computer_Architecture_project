@@ -1,6 +1,6 @@
 #include "headers/cache_structs.h"
 #include "headers/utils.h"
-
+#include "headers/mesi_bus.h"
 
 #define BLOCK_OFFSET_BITS 2       // log2(4) = 2 bits to index a word within a block
 #define INDEX_BITS 6              // log2(64) = 6 bits for cache index
@@ -479,7 +479,7 @@ bool cache_read(CACHE* cache,  uint32_t address, uint32_t *data, MESI_bus *mesi_
 * Description: write command. first check if the data is in the cache, if not, send a bus transaction(BUSRDX).
 * after that, all other caches will see the transaction. if it's in another cache, they will send the data to the bus and shared = 1. then we call read_from_bus
 *******************************************************************************/
-bool cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
+int cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
     uint32_t tag, index, block_offset;
     int origid = cache->cache_id; 
     get_cache_address_parts(address, &tag, &index, &block_offset);
@@ -493,8 +493,9 @@ bool cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
         //printf("cache hit, tag:%d, tsram_state:%d\n", tsram_line->tag, tsram_line->mesi_state);
         if(tsram_line->mesi_state == MODIFIED || tsram_line->mesi_state == EXCLUSIVE)
         {
-            printf("Cache write hit! Data is in state:%d, writing to cache...\n", tsram_line->mesi_state);
+            printf("Cache write hit! Data is in state: %d, writing to cache...\n", tsram_line->mesi_state);
             dsram_line->data[block_offset] = data; 
+            cache->ack = 1; 
             tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
             printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
             log_cache_state(cache);
