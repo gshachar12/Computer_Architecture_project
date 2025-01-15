@@ -87,6 +87,7 @@ typedef struct
     int stall;
     int bus_shared; // set to 1 when answering a BusRd transaction if any of the cores has the data in the cache, otherwise set to 0.
     int bus_requesting_id; /********************************************************** */
+    int bus_requesting_address;
     int bus_write_buffer;
     FILE *logfile;
 } MESI_bus;

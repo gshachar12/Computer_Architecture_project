@@ -47,7 +47,7 @@ int main() {
    while(!cache0.ack)
       {
           clock++;
-         snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+         snoop_bus(Cache_array, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
          log_mesibus(&mesi_bus, clock);
       }
    printf("\n-----------------------------------------------------------------------------------------\n");
@@ -65,7 +65,7 @@ int main() {
    while(!cache1.ack)
    {
       clock++;
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      snoop_bus(Cache_array, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
       log_mesibus(&mesi_bus, clock);
       
     }
@@ -78,7 +78,7 @@ int main() {
      while(!cache0.ack)
    {
       clock++;
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      snoop_bus(Cache_array,  &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 
       log_mesibus(&mesi_bus, clock);
    }
@@ -96,7 +96,7 @@ int main() {
 
       printf("\n\n\nclock cycle ack %d\n\n\n", clock);
 
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      snoop_bus(Cache_array,  &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
       log_mesibus(&mesi_bus, clock);
    }
    clock++;
@@ -111,7 +111,7 @@ int main() {
      while(!cache3.ack)
    {
       clock++;
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      snoop_bus(Cache_array, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 
       log_mesibus(&mesi_bus, clock);
    }
@@ -125,7 +125,7 @@ int main() {
      while(!cache3.ack)
    {
       clock++;
-      snoop_bus(Cache_array, address, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
+      snoop_bus(Cache_array, &mesi_bus, &main_memory, clock); //main memory data should be fetched to cache0
 
       log_mesibus(&mesi_bus, clock);
    }

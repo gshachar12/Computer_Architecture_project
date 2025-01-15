@@ -7,8 +7,8 @@
 #include "state_machine.h"
 
 /* Function prototypes */
-int state_machine(Core *core, Command *com, int *stall);
-int detect_data_hazard(DecodeBuffers *decode_buf, ExecuteBuffer *execute_buf);
-int pipeline(char* log_file,  Core* core);
+int state_machine(Core *core, Command *com, int *stall, MESI_bus* mesi_bus);
+int detect_data_hazard(DecodeBuffers *decode_buf, ExecuteBuffer *execute_buf, MESI_bus* mesi_bus);
+int pipeline( Core* core, int clock, MESI_bus* mesi_bus);
 
 #endif /* PIPELINE_H */

@@ -78,6 +78,7 @@ void initialize_mesi_bus(MESI_bus *bus, const char *log_filename)
     bus->bus_write_buffer=0;
     bus->stall=0;
     bus->logfile = fopen(log_filename, "w");
+    bus->bus_requesting_address=0;
     if (bus->logfile == NULL) {
         perror("Error opening log file for DSRAM");
         exit(EXIT_FAILURE);
@@ -101,14 +102,6 @@ void initialize_command(Command* cmd)
 {
         // Initialize current_instruction fields
 
-    cmd = (Command *)malloc(sizeof(Command));
-
-     if (cmd == NULL) {
-        perror("Memory allocation failed for cmd");
-        // Free already allocated memory
-        free(cmd);
-        
-    }
 
     strcpy(cmd->inst, "NOP");
     cmd->opcode = 0;
@@ -124,20 +117,30 @@ void initialize_command(Command* cmd)
      }
 }
 
+
 void initialize_instruction_array(Command** instruction_array, int instruction_count)
 {
-    // Allocate memory for instruction_array (pointer to an array of Command pointers)
-    instruction_array = (Command **)malloc(instruction_count * sizeof(Command *));
-    if (instruction_array == NULL) {
-        perror("Memory allocation failed for instruction_array");
-        free(instruction_array);  // Free previously allocated memory
+
+    for (int i = 0; i < instruction_count; i++) {
+        instruction_array[i] = (Command *)malloc(sizeof(Command));
+        
+        if (instruction_array[i] == NULL) {
+            perror("Memory allocation failed for cmd");
+
+            // Free already allocated memory
+            for (int j = 0; j < i; j++) {
+                free(instruction_array[j]);
+            }
+
+            return; // Exit the function to indicate failure
+        }
+        initialize_command(instruction_array[i]);
+
+
     }
 
-    // Allocate memory for each Command in instruction_array
-    for (int i = 0; i < instruction_count; i++) {
-       initialize_command(instruction_array[i]);  // Assuming initialize_command() handles memory allocation
-    }
 }
+
 
 void initialize_core_buffers(Core* core)
 {
@@ -184,23 +187,35 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
     initialize_TSRAM(cache->tsram, TSRAM_log_filename);
 }
 
-Core* initialize_core(int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename) {
-    Core* core = (Core *)malloc(sizeof(Core));  // Allocate memory for the Core struct
-    if (core == NULL) {
-        perror("Memory allocation failed for Core");
-        return NULL;
-    }
-
+void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, char* pipeline_log_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename) {
+    core->cache = (CACHE *)malloc(sizeof(CACHE));  // Allocate memory for the Core struct
+    core->log_file = pipeline_log_file; 
     core->core_id = core_id;
     core->pc = 0;
     core->IC = instruction_count;
     core->instruction_file = imem_file;
-    initialize_instruction_array(core->instruction_array, core->IC); 
-    initialize_register_file(core->register_file); 
-    initialize_command(core->current_instruction);
-    initialize_core_buffers(core);
-    initialize_cache(core->cache,DSRAM_log_filename, TSRAM_log_filename, core->core_id ); 
-    printf("Core %d initialized.\n", core_id);
+        // Allocate memory for instruction_array (pointer to an array of Command pointers)
+    core->instruction_array = (Command **)malloc(instruction_count * sizeof(Command *));
+    if (core->instruction_array == NULL) {
+        perror("Memory allocation failed for instruction_array");
+        free(core->instruction_array);  // Free previously allocated memory
+    }
 
-    return core;
+
+    initialize_instruction_array(core->instruction_array, core->IC); 
+
+    initialize_register_file(core->register_file); 
+        core->current_instruction = (Command *)malloc(sizeof(Command));
+        
+        if (core->current_instruction== NULL) {
+            perror("Memory allocation failed for cmd");
+            return; // Exit the function to indicate failure
+        }
+
+    initialize_command(core->current_instruction);
+
+    initialize_core_buffers(core);
+
+    initialize_cache(core->cache,DSRAM_log_filename, TSRAM_log_filename, core->core_id ); 
+
 }

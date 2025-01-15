@@ -233,8 +233,9 @@ int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout)
 	while (last >= 0 && dmem[last] == 0)
 		last--;
 	for (i = 0; i <= last; i++)
+	{
 		fprintf(fp_dmemout, "%08X\n", dmem[i]);
-
-	
-	return line_count-1;
+		printf("%08X\n", dmem[i]);
+	}
+	return line_count;
 }

@@ -6,7 +6,54 @@
 #include "headers/initialize.h"
 // Function to initialize Core
 
-//mesi_bus
+static int lastGrantedCore = -1;
+
+bool busAvailable(MESI_bus* bus) {
+    if(bus->bus_cmd == NO_COMMAND && bus->stall == 0) {
+        return true;
+    }
+    
+    return false;
+}
+
+int roundRobinArbitrator(MESI_bus* bus, bool busRequests[NUM_CORES]) {
+    if (!busAvailable(bus)) {
+        return -1;
+    }
+
+    // round robin
+    for (int i = 1; i <= NUM_CORES; i++) {
+        int coreId = (lastGrantedCore + i) % NUM_CORES;
+        if (busRequests[coreId]) {
+            lastGrantedCore = coreId;
+            return coreId;
+        }
+    }
+    return -1;
+}
+
+
+int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
+{
+        printf("%d Loaded Instructions\n\n", cores[0]->IC);
+
+    const int max_cycles = 10000; // Prevent infinite loops
+    CACHE* caches[] = {cores[0]->cache, cores[1]->cache, cores[2]->cache, cores[3]->cache};
+    int finished =0; 
+    int clock =0;
+    Core* core = cores[0]; 
+    // Print the content of the array
+
+
+    while(clock<max_cycles && !finished)
+    {
+        finished = pipeline(cores[0], clock, bus);
+        snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
+        clock++; 
+    }
+
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -14,59 +61,81 @@ int main(int argc, char *argv[])
     char* imem_file;
     char* dmem_file;
     char* pipeline_log_file ="log_files/pipeline_log.txt";
+    MainMemory main_memory;
+    Core core0, core1, core2, core3;
+    Core* cores[] = {&core0, &core1, &core2, &core3};
+    MESI_bus mesi_bus;
+
+    printf("welcome\n");
+
     // check that we have 3 cmd line parameters
-    Core* cores[NUM_CORES]; 
 	if (argc != 4) {
 		printf("usage: asm program.asm imem.txt dmem.txt\n");
 		exit(1);
 	}
-
-	// open files
-	// strcpy(program,argv[1]);
-	// strcpy(imem_file, argv[2]);
-	// strcpy(dmem_file,argv[3]);
-
-
     printf("files are: %s, %s, %s\n", argv[1], argv[2],argv[3] );
 
     FILE* fp_asm = fopen(argv[1], "rt");
 	FILE* fp_imemout = fopen(argv[2], "wt");
 	FILE* fp_dmemout = fopen(argv[3], "wt");
 
-
 	if (!fp_asm || !fp_imemout || !fp_dmemout) {
 		printf("ERROR: couldn't open files\n");
 		exit(1);
 	}
+    
+    FILE* tsram0_logfile = fopen("log_files/tsram0.txt", "wt");
+    FILE* tsram1_logfile = fopen("log_files/tsram1.txt", "wt");
+    FILE* tsram2_logfile = fopen("log_files/tsram2.txt", "wt");
+    FILE* tsram3_logfile = fopen("log_files/tsram3.txt", "wt");
+
+    FILE* dsram0_logfile = fopen("log_files/dsram0.txt", "wt");
+    FILE* dsram1_logfile = fopen("log_files/dsram1.txt", "wt");
+    FILE* dsram2_logfile = fopen("log_files/dsram2.txt", "wt");
+    FILE* dsram3_logfile = fopen("log_files/dsram3.txt", "wt");
+    FILE* dsram_log_files[] = {dsram0_logfile, dsram1_logfile, dsram2_logfile, dsram3_logfile};
+    FILE* tsram_log_files[] = {tsram0_logfile, tsram1_logfile, tsram2_logfile, tsram3_logfile};
+    printf("tsram and dsram files are initialized");
+    main_memory.memory_data = (int *)malloc(MAIN_MEMORY_SIZE * sizeof(int));
+
+    initialize_main_memory(&main_memory, "mem_files/main_memory.txt");
+    printf("\nFinished initializing main_memory\n");
+    initialize_mesi_bus(&mesi_bus, "mem_files/mesi_bus.txt");
+    printf("\nFinished initializing mesi_bus\n");
+
+
     int instruction_count = interpret_file(fp_asm, fp_imemout, fp_dmemout);
 
     printf("%sFinished interepreting file %s\n", GREEN, WHITE);
-        char buffer[100];
+    
 
+    
+    char buffer[100];
 
-    for (int core_id=0; core_id <= NUM_CORES; core_id++)
+    for (int core_id=0; core_id < NUM_CORES; core_id++)
     {
-       cores[core_id] = initialize_core(core_id, instruction_count, fp_imemout); 
+        initialize_core(cores[core_id], core_id, instruction_count, fp_imemout,pipeline_log_file,dsram_log_files[core_id], tsram_log_files[core_id] ); 
+        printf("Core %d initialized.\n", core_id);
     }
     
-    int clock_cycles = pipeline( pipeline_log_file, cores[0]);
-
-    snoop_bus(core_id, instruction_count, fp_imemout); 
-    
-    
-    // Output the result
-    printf("Pipeline executed in %d clock cycles\n", clock_cycles);
+    printf("%d Loaded Instructions\n\n", cores[0]->IC);
 
 
-    
+    simulate_cores( cores, &mesi_bus, &main_memory );
+
+exit(1);
     // close files
 	fclose(fp_asm);
 	fclose(fp_imemout);
 	fclose(fp_dmemout);
-
-    // Clean up
-   // free(cores);
-    //fclose(imem);
+    fclose(tsram0_logfile);
+    fclose(tsram1_logfile);
+    fclose(tsram2_logfile);
+    fclose(tsram3_logfile);
+    fclose(dsram0_logfile);
+    fclose(dsram1_logfile);
+    fclose(dsram2_logfile);
+    fclose(dsram3_logfile);
 	
     return EXIT_SUCCESS;
      

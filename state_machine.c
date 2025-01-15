@@ -57,38 +57,53 @@ void BuildCommand(char * command_line, Command * com)
 
 
 int fetch_instruction(Core *core, int index) {
-    
-    static char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
-    // Move to the correct position in the instruction file
-    // Fetch the instruction
-    if (fgets(instruction, sizeof(instruction), core->instruction_file) != NULL) {
-            // Remove trailing newline character
-            instruction[strcspn(instruction, "\n")] = '\0';
-            // Reallocate to expand the instruction array 
-            strcpy(core->instruction_array[index]->inst,instruction) ; // Copy instruction to command_line
-            core->instruction_array[index]->opcode = 0;
-            core->instruction_array[index]->rd = 0;
-            core->instruction_array[index]->rs = 0;
-            core->instruction_array[index]->rt = 0;
-            core->instruction_array[index]->rm = 0;
-            core->instruction_array[index]->imm = 0;
-            core->instruction_array[index]->state = 0;
-            core->pc++; // Increment program counter 
-            return 1;
-   }
-    return -1; 
+    // Position the file pointer at the beginning (or desired location)
+    fseek(core->instruction_file, 0, SEEK_SET);
 
+    if (core->instruction_file == NULL) {
+        perror("Instruction file is not open");
+        return 0; // Failure
+    }
+
+    char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
+
+    // Fetch the instruction using fgets
+    if (fgets(instruction, sizeof(instruction), core->instruction_file) != NULL) {
+        // Remove trailing newline character (if present)
+        instruction[strcspn(instruction, "\n")] = '\0';
+
+        // Debugging print: print the entire instruction
+        printf("Fetched instruction: %s\n", instruction);
+        fflush(stdout);
+
+        // Allocate memory for fetch_buffer and copy the instruction
+        core->fetch_buffer = malloc(strlen(instruction) + 1);
+        if (core->fetch_buffer == NULL) {
+            perror("Memory allocation failed for fetch_buffer");
+            return 0; // Failure
+        }
+        strcpy(core->fetch_buffer, instruction);
+
+        // Increment program counter (pc)
+        core->pc++;
+        return 1; // Success
+    } else {
+        if (feof(core->instruction_file)) {
+            printf("End of instruction file reached\n");
+        } else {
+            perror("Error reading instruction file");
+        }
+        return 0; // Failure
+    }
 }
 
-void decode(Core *core, Command *com, char command_line[9]) {
+void decode(Core *core, Command *com) {
     // Build the Command struct from the command line
-    BuildCommand(command_line, com);
+    BuildCommand(core->fetch_buffer, com);
         printf("\nentered decode: %s\n", com->inst);
 
     printf("opcode of com is: %d\n", com->opcode);
-    printf("%s", command_line);
-
-    
+    printf("%s", core->fetch_buffer);
 
     // Process the opcode and set control signals based on it
     switch (com->opcode) {
@@ -345,7 +360,7 @@ void execute(Core *core, Command *com) {
     core->execute_buf.mem_busy = memory_or_not;  // Set mem_busy if a memory operation is in progress
 }
 
-void memory_state(Command *com, Core *core) {
+void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
     com->state = MEM;
     int address = 0;
     uint32_t data;
@@ -353,7 +368,7 @@ void memory_state(Command *com, Core *core) {
     if (core->execute_buf.memory_or_not == 1) {  // Memory operation indicator (load/store)
         if (com->control_signals.mem_read == 1) {  // Load Word (LW)
             // Cache read instead of direct memory read for the specific core
-            bool hit = cache_read(core->cache, core->execute_buf.mem_address, &data, core->bus);  // Pass the logfile
+            bool hit = cache_read(core->cache, core->execute_buf.mem_address, &data, mesi_bus);  // Pass the logfile
 
             if (core->cache->ack) {
                 core->mem_buf.load_result = data;  // Store loaded data in the buffer
@@ -366,7 +381,8 @@ void memory_state(Command *com, Core *core) {
 
         if (com->control_signals.mem_write == 1) {  // Store Word (SW)
             // Cache write instead of direct memory write for the specific core
-            cache_write(core->cache, core->execute_buf.mem_address,  core->bus, core->execute_buf.rd_value);  // Pass the logfile
+            
+            cache_write(core->cache, core->execute_buf.mem_address, core->execute_buf.rd_value,  mesi_bus);  // Pass the logfile
             printf("Memory Write (Cache): Stored value %d to address %d\n", core->execute_buf.rd_value, core->execute_buf.mem_address);
         }
     } else {

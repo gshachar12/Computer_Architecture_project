@@ -29,14 +29,12 @@ struct dsram;
 /******************************************************************************
 * Function Prototypes
 *******************************************************************************/
-void initialize_memory(void);
 void print_register_file_to_file(const char *filename);
 void BuildCommand(char * command_line, Command * com);
-Command* initialize_command();
 int fetch_instruction(Core *core, int index);
-void decode(Core *core, Command *com, char command_line[10]);
+void decode(Core *core, Command *com);
 void execute(Core *core, Command *com);
-void memory_state(Command *com, Core *core);
+void memory_state(Command *com, Core *core, MESI_bus* bus);
 void writeback_state(Command *com, Core *core);
 
 #endif // CPU_SIMULATION_H

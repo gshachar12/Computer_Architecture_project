@@ -14,6 +14,6 @@ void initialize_command(Command *cmd);
 void initialize_instruction_array(Command **instruction_array, int instruction_count);
 void initialize_core_buffers(Core *core);
 void initialize_cache(CACHE *cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename, int core_id);
-Core* initialize_core(int core_id, int instruction_count, FILE *imem_file, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename);
+void initialize_core(Core* core,int core_id, int instruction_count, FILE *imem_file,char* pipeline_log_file, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename);
 
 #endif // INITIALIZATION_H

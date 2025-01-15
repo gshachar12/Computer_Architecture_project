@@ -78,6 +78,8 @@ typedef struct Core {
     int pc;                     // Program counter
     int IC;    
     FILE* instruction_file; 
+    char* log_file;
+    char* fetch_buffer; 
     Command* current_instruction; // Current fetched instruction
     DecodeBuffers decode_buf;   // Decode buffers
     ExecuteBuffer execute_buf; // Execute buffer for each core
@@ -86,6 +88,7 @@ typedef struct Core {
     CACHE* cache; 
     Command** instruction_array;     // Pointer to the instruction file
     MESI_bus* bus; 
+    
 
 } Core;
 
