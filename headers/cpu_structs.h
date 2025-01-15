@@ -81,8 +81,8 @@ typedef struct Core {
     char* log_file;
     char* fetch_buffer; 
     Command* current_instruction; // Current fetched instruction
-    DecodeBuffers decode_buf;   // Decode buffers
-    ExecuteBuffer execute_buf; // Execute buffer for each core
+    DecodeBuffers* decode_buf;   // Decode buffers
+    ExecuteBuffer* execute_buf; // Execute buffer for each core
     MemBuffer mem_buf;  // Memory buffer for each core
     char register_file[NUM_REGS][9]; // Register file
     CACHE* cache; 

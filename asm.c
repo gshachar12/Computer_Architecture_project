@@ -237,5 +237,9 @@ int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout)
 		fprintf(fp_dmemout, "%08X\n", dmem[i]);
 		printf("%08X\n", dmem[i]);
 	}
+
+
+	fseek(fp_imemout, 0, SEEK_SET);
+
 	return line_count;
 }

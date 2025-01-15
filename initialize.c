@@ -77,6 +77,7 @@ void initialize_mesi_bus(MESI_bus *bus, const char *log_filename)
     bus->wr=0;
     bus->bus_write_buffer=0;
     bus->stall=0;
+    bus->busy=0;
     bus->logfile = fopen(log_filename, "w");
     bus->bus_requesting_address=0;
     if (bus->logfile == NULL) {
@@ -145,22 +146,22 @@ void initialize_instruction_array(Command** instruction_array, int instruction_c
 void initialize_core_buffers(Core* core)
 {
         // Initialize buffers to zero or default values
-    core->decode_buf.rs_value = 0;
-    core->decode_buf.rt_value = 0;
-    core->decode_buf.rd_value = 0;
-    core->decode_buf.rs = -1;
-    core->decode_buf.rt = -1;
-    core->decode_buf.rd = -1;
-    core->decode_buf.is_branch = 0;
+    core->decode_buf->rs_value = 0;
+    core->decode_buf->rt_value = 0;
+    core->decode_buf->rd_value = 0;
+    core->decode_buf->rs = -1;
+    core->decode_buf->rt = -1;
+    core->decode_buf->rd = -1;
+    core->decode_buf->is_branch = 0;
 
-    core->execute_buf.alu_result = 0;
-    core->execute_buf.mem_address = 0;
-    core->execute_buf.rd_value = 0;
-    core->execute_buf.destination = -1;
-    core->execute_buf.memory_or_not = 0;
-    core->execute_buf.mem_busy = 0;
-    core->execute_buf.branch_resolved = 0;
-    core->execute_buf.is_branch = 0;
+    core->execute_buf->alu_result = 0;
+    core->execute_buf->mem_address = 0;
+    core->execute_buf->rd_value = 0;
+    core->execute_buf->destination = -1;
+    core->execute_buf->memory_or_not = 0;
+    core->execute_buf->mem_busy = 0;
+    core->execute_buf->branch_resolved = 0;
+    core->execute_buf->is_branch = 0;
     core->mem_buf.load_result = 0;
     core->mem_buf.destination_register = -1;
 }
@@ -201,6 +202,10 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
         free(core->instruction_array);  // Free previously allocated memory
     }
 
+    core->decode_buf = (DecodeBuffers *)malloc(instruction_count * sizeof(DecodeBuffers));
+
+    core->execute_buf = (ExecuteBuffer *)malloc(instruction_count * sizeof(ExecuteBuffer));
+ 
 
     initialize_instruction_array(core->instruction_array, core->IC); 
 

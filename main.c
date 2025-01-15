@@ -35,23 +35,31 @@ int roundRobinArbitrator(MESI_bus* bus, bool busRequests[NUM_CORES]) {
 
 int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
 {
-        printf("%d Loaded Instructions\n\n", cores[0]->IC);
+    printf("%d Loaded Instructions\n\n", cores[0]->IC);
 
     const int max_cycles = 10000; // Prevent infinite loops
     CACHE* caches[] = {cores[0]->cache, cores[1]->cache, cores[2]->cache, cores[3]->cache};
     int finished =0; 
     int clock =0;
+    int first_command = 0;
+    int last_command = 0;
+    int hazard=0; 
+    int saved_last_command;
     Core* core = cores[0]; 
     // Print the content of the array
 
-
+    int num_executed_commands=0;
     while(clock<max_cycles && !finished)
     {
-        finished = pipeline(cores[0], clock, bus);
+
+        finished = pipeline(cores[0], clock, bus, &num_executed_commands, &first_command, &last_command, &hazard);
+        printf("bus command %d", bus->bus_cmd);
         snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
+        printf("%s\n\n\n------------------------------------------------------------: %s\n\n", BLUE, WHITE, clock);
+        printf("\n\n");
         clock++; 
     }
-
+printf("execute buffer alu out %d", core->execute_buf->alu_result);
 }
 
 
@@ -76,7 +84,7 @@ int main(int argc, char *argv[])
     printf("files are: %s, %s, %s\n", argv[1], argv[2],argv[3] );
 
     FILE* fp_asm = fopen(argv[1], "rt");
-	FILE* fp_imemout = fopen(argv[2], "wt");
+	FILE* fp_imemout = fopen(argv[2], "r+");
 	FILE* fp_dmemout = fopen(argv[3], "wt");
 
 	if (!fp_asm || !fp_imemout || !fp_dmemout) {
@@ -106,9 +114,9 @@ int main(int argc, char *argv[])
 
     int instruction_count = interpret_file(fp_asm, fp_imemout, fp_dmemout);
 
-    printf("%sFinished interepreting file %s\n", GREEN, WHITE);
-    
+    char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
 
+    
     
     char buffer[100];
 
@@ -123,7 +131,7 @@ int main(int argc, char *argv[])
 
     simulate_cores( cores, &mesi_bus, &main_memory );
 
-exit(1);
+
     // close files
 	fclose(fp_asm);
 	fclose(fp_imemout);

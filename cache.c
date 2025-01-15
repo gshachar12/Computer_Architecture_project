@@ -179,7 +179,7 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
     bus->bus_addr = addr;
     bus->bus_requesting_id = origid;
     bus->bus_requesting_address=addr;
-
+    bus->busy = 1;
     // Print the values after assigning them
     printf("bus_origid: %d\n", bus->bus_origid);
     printf("bus_cmd: %d\n", bus->bus_cmd);
@@ -208,7 +208,7 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
 
      if(main_memory_stalls_counter<MAIN_MEMORY_STALLS) //empty stalls for fetching data from main memory
     {
-        printf("clock and stall counter: %d\n",main_memory_stalls_counter );
+        printf("%sclock and stall counter: %d%s\n", MAGENTA,main_memory_stalls_counter, WHITE );
         main_memory_stalls_counter++; 
         bus->stall =1;
         return 0; 
@@ -226,6 +226,8 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
         }
         else // transaction finished
         {
+        printf("\nfinished stalling: %d\n",main_memory_stalls_counter );
+
         bus->bus_cmd = NO_COMMAND;
         block_offset_counter = 0; 
         num_words_sent=0;
@@ -257,7 +259,7 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
     }
     else
     {
-        printf("finished stalling: %d\n",main_memory_stalls_counter );
+        printf("\nfinished stalling: %d\n",main_memory_stalls_counter );
         bus->bus_cmd = NO_COMMAND;
         block_offset_counter = 0; 
         num_words_sent=0;
@@ -282,7 +284,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
      
     MESI_bus* data_path_bus;
     // Debug print to see cache address parts
-        caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, bus->bus_requesting_address); // Check if the data is in another cache, if yes, return the cache id
+    
 
         switch (bus->bus_cmd) 
         {
@@ -293,6 +295,8 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 bus->bus_addr = 0;
                 break;
             case BUS_RD:
+                caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, bus->bus_requesting_address); // Check if the data is in another cache, if yes, return the cache id
+
                 // Bus read operation : When a BusRd (Bus Read) transaction occurs on the bus, it indicates that a processor or cache is requesting a block of data from the memory system.
                 printf("Snooping BUS_READ\n"); 
                 if(bus->stall)
@@ -334,6 +338,8 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
                     printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
                     caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = EXCLUSIVE;
+
+                    log_cache_state(caches[bus->bus_requesting_id] );
                     
                 }
 
@@ -341,6 +347,8 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
 
 
             case BUS_RDX:
+                caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, bus->bus_requesting_address); // Check if the data is in another cache, if yes, return the cache id
+
                 // Bus read exclusive operation : When a BusRdX (Bus Read Exclusive) transaction occurs on the bus, it indicates that a processor or cache is requesting a block of data from the memory system with the intent to write to it.
                 printf("Snooping BUS_READ_EXCLUSIVE\n");
 
@@ -405,13 +413,14 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 
                 if(caches[bus->bus_requesting_id]->ack)
                 {
+
                     if(bus->wr)
                     {        
                     caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] = bus->bus_write_buffer; 
                     printf("write %d",    caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] );
                     bus->wr=0;
                     }
-                    
+
                     bus->bus_requesting_address=-1;
                     bus->bus_origid = -1;  // Set the originator of the bus transaction
                     bus->bus_cmd = 0;        // Set the bus command (e.g., BUS_RD, BUS_RDX, etc.)
@@ -421,10 +430,15 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     bus->wr=0;
                     bus->bus_write_buffer=0;
                     bus->stall=0;
+                    bus->busy =0;
 
                     log_cache_state(caches[bus->bus_requesting_id]);
-                    if (caches_owning_block_id_array!=NULL)
-                        log_cache_state(caches[caches_owning_block_id_array[0]]);
+                                        printf("%s \nreceived ack\n %s",YELLOW, WHITE );
+
+                    //if (caches_owning_block_id_array!=NULL)
+                      //  log_cache_state(caches[caches_owning_block_id_array[0]]);
+                
+
                 }
                 break;
 
@@ -432,9 +446,6 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
             default:
                 printf("Unknown bus operation.\n");
             break;
-
-
-
             return caches[bus->bus_requesting_id]->ack; 
         }
 }
