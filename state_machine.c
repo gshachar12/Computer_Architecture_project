@@ -202,13 +202,17 @@ void decode(Core *core, Command *com) {
 
     // Save register values into decode buffers
 
-    *(core->register_file[1]) = com->imm;
+    //*(core->register_file[1]) = com->imm;
+    Int_2_Hex(com->imm, core->register_file[1]);
+    printf("---------------------reg1 = %d\n", Hex_2_Int_2s_Comp(core->register_file[1]));
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
     core->decode_buf->rs = com->rs;
     core->decode_buf->rt = com->rt;
     core->decode_buf->rd = com->rd;
+    printf("imm = %d\n", com->imm);
+    printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);
 
 }
 void execute(Core *core, Command *com) {
@@ -360,17 +364,17 @@ void execute(Core *core, Command *com) {
     core->execute_buf->rd_value = core->decode_buf->rd_value;
     core->execute_buf->is_branch = core->execute_buf->is_branch || 0;  // Ensure default value is 0
     core->execute_buf->mem_busy = memory_or_not;  // Set mem_busy if a memory operation is in progress
+    printf("EXECUTE BUFFER: alu_result: %d, destination: %d, mem_address: %d, memory_or_not: %d\n", core->execute_buf->alu_result, core->execute_buf->destination, core->execute_buf->mem_address, core->execute_buf->memory_or_not);
 
 
 }
 
 void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
     com->state = MEM;
-    int address = 0;
-    uint32_t data;
+    uint32_t data = 0;
     // If memory access is required (i.e., for Load/Store operations)
     core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
-
+    printf("core->execute_buf->memory_or_not: %d, address: %d, data(if writing): %d\n", core->execute_buf->memory_or_not, core->execute_buf->mem_address, core->execute_buf->rd_value);
     if (core->execute_buf->memory_or_not == 1) {  // Memory operation indicator (load/store)
 
         if (com->control_signals.mem_read == 1) {  // Load Word (LW)

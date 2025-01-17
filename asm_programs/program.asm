@@ -1,1 +1,1 @@
-sw $r1, $zero, $r1, 7		# PC=6
+sw $imm, $zero, $imm, 15        # PC=0
