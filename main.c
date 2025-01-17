@@ -53,13 +53,13 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
     {
 
         finished = pipeline(cores[0], clock, bus, &num_executed_commands, &first_command, &last_command, &hazard);
-        snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
         log_mesibus(bus, clock);
+        snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
         printf("%s\n\n\n------------------------------------------------------------: %s\n\n", BLUE, WHITE, clock);
         printf("\n\n");
         clock++; 
     }
-print_register_file_to_file("log_files/register_log.txt", core);
+print_register_file_to_file("log_files/register_log.txt",core);
 printf("execute buffer alu out %d", core->execute_buf->alu_result);
 }
 
