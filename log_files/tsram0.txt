@@ -4,7 +4,7 @@ Block Number | MESI State | Tag
            0 | INVALID     | 0x00000000
            1 | INVALID     | 0x00000000
            2 | INVALID     | 0x00000000
-           3 | EXCLUSIVE   | 0x00000000
+           3 | INVALID     | 0x00000000
            4 | INVALID     | 0x00000000
            5 | INVALID     | 0x00000000
            6 | INVALID     | 0x00000000
@@ -69,10 +69,10 @@ Block Number | MESI State | Tag
 TSRAM Cache State:
 Block Number | MESI State | Tag        
 ---------------------------------------------------
-           0 | INVALID     | 0x00000000
+           0 | MODIFIED    | 0x00000000
            1 | INVALID     | 0x00000000
            2 | INVALID     | 0x00000000
-           3 | EXCLUSIVE   | 0x00000000
+           3 | INVALID     | 0x00000000
            4 | INVALID     | 0x00000000
            5 | INVALID     | 0x00000000
            6 | INVALID     | 0x00000000

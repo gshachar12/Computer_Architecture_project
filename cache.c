@@ -208,7 +208,6 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
 
      if(main_memory_stalls_counter<MAIN_MEMORY_STALLS) //empty stalls for fetching data from main memory
     {
-        printf("%sclock and stall counter: %d%s\n", MAGENTA,main_memory_stalls_counter, WHITE );
         main_memory_stalls_counter++; 
         bus->stall =1;
         return 0; 

@@ -202,6 +202,9 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
         free(core->instruction_array);  // Free previously allocated memory
     }
 
+
+
+
     core->decode_buf = (DecodeBuffers *)malloc(instruction_count * sizeof(DecodeBuffers));
 
     core->execute_buf = (ExecuteBuffer *)malloc(instruction_count * sizeof(ExecuteBuffer));

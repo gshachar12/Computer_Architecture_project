@@ -201,12 +201,15 @@ void decode(Core *core, Command *com) {
     }
 
     // Save register values into decode buffers
+
+    *(core->register_file[1]) = com->imm;
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
     core->decode_buf->rs = com->rs;
     core->decode_buf->rt = com->rt;
     core->decode_buf->rd = com->rd;
+
 }
 void execute(Core *core, Command *com) {
     com->state = EXEC;
@@ -219,11 +222,6 @@ void execute(Core *core, Command *com) {
         return;
     }
 
-    // Structural Hazard: Check if memory is busy
-    // if (core->execute_buf->mem_busy) {
-    //     printf("Core %d: Memory unit is busy. Execution stalled.\n", core->core_id);
-    //     return;  // Stall execution
-    // }
 
     switch (com->opcode) {
         case 0: // ADD (R-type)
@@ -257,23 +255,23 @@ void execute(Core *core, Command *com) {
             break;
 
         case 6: // SLL (Shift Left Logical)
-            alu_result = core->decode_buf->rt_value << com->imm;
+            alu_result = core->decode_buf->rt_value << core->decode_buf->rt_value;
             memory_or_not = 0;
             break;
 
         case 7: // SRA (Shift Right Arithmetic)
-            alu_result = core->decode_buf->rt_value >> com->imm;
+            alu_result = core->decode_buf->rt_value >> core->decode_buf->rt_value;
             memory_or_not = 0;
             break;
 
         case 8: // SRL (Shift Right Logical)
-            alu_result = (unsigned int)core->decode_buf->rt_value >> com->imm;
+            alu_result = (unsigned int)core->decode_buf->rt_value >>core->decode_buf->rt_value;
             memory_or_not = 0;
             break;
 
         case 9: // BEQ (Branch if Equal)
             if (core->decode_buf->rs_value == core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);  // Branch calculation (multiply immediate by 4)
+                core->pc = (core->decode_buf->rd_value & 0x3FF);  // Branch calculation (multiply immediate by 4)
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -281,7 +279,7 @@ void execute(Core *core, Command *com) {
 
         case 10: // BNE (Branch if Not Equal)
             if (core->decode_buf->rs_value != core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);
+                core->pc = (core->decode_buf->rd_value & 0x3FF);
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -289,7 +287,7 @@ void execute(Core *core, Command *com) {
 
         case 11: // BLT (Branch if Less Than)
             if (core->decode_buf->rs_value < core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);
+                core->pc =(core->decode_buf->rd_value & 0x3FF);
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -297,7 +295,7 @@ void execute(Core *core, Command *com) {
 
         case 12: // BGT (Branch if Greater Than)
             if (core->decode_buf->rs_value > core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);
+                core->pc = (core->decode_buf->rd_value & 0x3FF);
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -305,7 +303,7 @@ void execute(Core *core, Command *com) {
 
         case 13: // BLE (Branch if Less or Equal)
             if (core->decode_buf->rs_value <= core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);
+                core->pc = (core->decode_buf->rd_value & 0x3FF);
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -313,27 +311,28 @@ void execute(Core *core, Command *com) {
 
         case 14: // BGE (Branch if Greater or Equal)
             if (core->decode_buf->rs_value >= core->decode_buf->rt_value) {
-                core->pc = core->pc + (com->imm << 2);
+                core->pc = (core->decode_buf->rd_value & 0x3FF);
             }
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
             break;
 
         case 15: // JAL (Jump and Link)
-            core->pc = com->imm;  // Jump to target address
+            *(core->register_file[15]) = core->pc; 
+            core->pc = (core->decode_buf->rd_value & 0x3FF);  // Jump to target address
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
             break;
 
         case 16: // LW (Load Word)
 
-            address = core->decode_buf->rs_value + com->imm;  // Base + offset
+            address = core->decode_buf->rs_value + core->decode_buf->rt_value;  // Base + offset
             alu_result = address;
             memory_or_not = 1;
             break;
 
         case 17: // SW (Store Word)
-            address = core->decode_buf->rs_value + com->imm;  // Base + offset
+            address = core->decode_buf->rs_value + core->decode_buf->rt_value;  // Base + offset
             alu_result = address;
             memory_or_not = 1;
             break;
@@ -350,7 +349,6 @@ void execute(Core *core, Command *com) {
             break;
     }
 
-    printf("Core %d: ALU Result = %d\n", core->core_id, alu_result);
 
     // Update the execute buffer
     core->execute_buf->alu_result = alu_result;
@@ -362,6 +360,8 @@ void execute(Core *core, Command *com) {
     core->execute_buf->rd_value = core->decode_buf->rd_value;
     core->execute_buf->is_branch = core->execute_buf->is_branch || 0;  // Ensure default value is 0
     core->execute_buf->mem_busy = memory_or_not;  // Set mem_busy if a memory operation is in progress
+
+
 }
 
 void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
@@ -369,7 +369,8 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
     int address = 0;
     uint32_t data;
     // If memory access is required (i.e., for Load/Store operations)
-    printf("\nalu result %d hhhhhhhhhh\n", core->execute_buf->destination);
+    core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
+
     if (core->execute_buf->memory_or_not == 1) {  // Memory operation indicator (load/store)
 
         if (com->control_signals.mem_read == 1) {  // Load Word (LW)
@@ -380,7 +381,6 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
             if (core->cache->ack) {
                 core->mem_buf.load_result = data;  // Store loaded data in the buffer
                 printf("Memory Read- Data is ready: Loaded value %d from address %d\n", core->mem_buf.load_result, core->execute_buf->mem_address);
-                core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
 
             } 
 

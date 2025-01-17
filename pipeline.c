@@ -86,11 +86,8 @@ int state_machine(Core* core, int num, char* log_file, MESI_bus* mesi_bus, int* 
         break;
 
     case EXEC:
-        //printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
         execute(core, com);
-        //printf("EXECUTE Command properties: ");
-        //printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
         printf("\nExecute PIPELINE Command properties: \n");
         printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
@@ -102,10 +99,13 @@ int state_machine(Core* core, int num, char* log_file, MESI_bus* mesi_bus, int* 
         break;
 
     case MEM:
-        if(!*hazard)
-            memory_state(com, core, mesi_bus);
-                printf("\nhaahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n");
 
+
+        if(!*hazard)
+        {
+
+            memory_state(com, core, mesi_bus);
+        }
         (*hazard) = detect_hazard(core, mesi_bus);
 
         modify_file_line(log_file, num + 1, "m ");
@@ -151,10 +151,12 @@ int pipeline( Core* core, int clock, MESI_bus* mesi_bus, int* num_executed_comma
 
            
             state_machine(core, j, core->log_file, mesi_bus, hazard);
-            printf("%sState: %s%s%s\n", WHITE, GREEN, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->instruction_array[j]->state], WHITE);
-            printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", core->instruction_array[j]->opcode, core->instruction_array[j]->rd,
+            printf("\n%sState: %s%s%s\n", WHITE, GREEN, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->instruction_array[j]->state], WHITE);
+            printf("\nopcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", core->instruction_array[j]->opcode, core->instruction_array[j]->rd,
                             core->instruction_array[j]->rs, core->instruction_array[j]->rt, core->instruction_array[j]->imm);
             printf("\nhazard %d\n",*hazard);
+
+            printf("\n the immediate value is %d",  *(core->register_file[1]));
             // Advance command state if no stall
             if (!*hazard && core->instruction_array[j]->state < WB) {  //!stall && 
 
