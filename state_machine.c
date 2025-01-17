@@ -13,23 +13,24 @@
 int pc; 
 int clk; 
 
-// Function to print the register file to a file (all registers in the same row)
-// void print_register_file_to_file(const char *filename) {
-//     FILE *file = fopen(filename, "a");  // Open in append mode to add to the file
-//     if (file == NULL) {
-//         perror("Error opening file for writing");
-//         return;
-//     }
+//Function to print the register file to a file (all registers in the same row)
+void print_register_file_to_file(const char *filename, Core* core) {
+    FILE *file = fopen(filename, "w");  // Open in append mode to add to the file
+    if (file == NULL) {
+        perror("Error opening file for writing");
+        return;
+    }
+    printf("\nwriting in file\n");
+    // Iterate through the register file and print each register value in the same row
+    for (int i = 0; i < NUM_REGS; i++) {
+        printf("\nregister %d %s", i, core->register_file[i]);
+        fprintf(file, "%s ", core->register_file[i]);  // Print each register value separated by space
+    }
 
-//     // Iterate through the register file and print each register value in the same row
-//     for (int i = 0; i < NUM_REGS; i++) {
-//         fprintf(file, "%s ", register_file[i]);  // Print each register value separated by space
-//     }
+    fprintf(file, "\n");  // End the row with a newline
 
-//     fprintf(file, "\n");  // End the row with a newline
-
-//     fclose(file);  // Close the file after writing
-// }
+    fclose(file);  // Close the file after writing
+}
 
 
 /******************************************************************************
