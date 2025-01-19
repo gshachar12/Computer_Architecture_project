@@ -112,10 +112,34 @@ void initialize_command(Command* cmd)
     cmd->rm = 0;
     cmd->imm = 0;
     cmd->state = 0;
-     if (cmd == NULL) {
-            perror("Memory allocation failed for instruction_array[i]");
-            exit(1);
-     }
+    cmd->hazard = 0; 
+    if (cmd == NULL) {
+        perror("Memory allocation failed for instruction_array[i]");
+        exit(1);
+    }
+}
+
+void initialize_pipeline_array(Command** pipeline_array, int instruction_count)
+{
+
+    for (int i = 0; i < instruction_count; i++) {
+
+        pipeline_array[i] = (Command *)malloc(sizeof(Command));
+        if (pipeline_array[i] == NULL) {
+            perror("Memory allocation failed for cmd");
+
+            // Free already allocated memory
+            for (int j = 0; j < i; j++) {
+                free(pipeline_array[j]);
+            }
+
+            return; // Exit the function to indicate failure
+        }
+        initialize_command(pipeline_array[i]);
+
+
+    }
+
 }
 
 
@@ -157,13 +181,14 @@ void initialize_core_buffers(Core* core)
     core->execute_buf->alu_result = 0;
     core->execute_buf->mem_address = 0;
     core->execute_buf->rd_value = 0;
-    core->execute_buf->destination = -1;
+    core->execute_buf->destination = 0;
     core->execute_buf->memory_or_not = 0;
     core->execute_buf->mem_busy = 0;
     core->execute_buf->branch_resolved = 0;
     core->execute_buf->is_branch = 0;
     core->mem_buf.load_result = 0;
-    core->mem_buf.destination_register = -1;
+    core->mem_buf.destination_register = 0;
+    core->wb_buf->finished=0; 
 }
 void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename, int cache_id)
 {
@@ -201,17 +226,21 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
         perror("Memory allocation failed for instruction_array");
         free(core->instruction_array);  // Free previously allocated memory
     }
-
-
-
-
+        core->pipeline_array = (Command **)malloc(5 * sizeof(Command *));
+    if (core->pipeline_array == NULL) {
+        perror("Memory allocation failed for instruction_array");
+        free(core->pipeline_array);  // Free previously allocated memory
+    }
+    
     core->decode_buf = (DecodeBuffers *)malloc(instruction_count * sizeof(DecodeBuffers));
 
     core->execute_buf = (ExecuteBuffer *)malloc(instruction_count * sizeof(ExecuteBuffer));
+    core->wb_buf = (WriteBackBuffer *)malloc(instruction_count * sizeof(WriteBackBuffer));
+
  
 
     initialize_instruction_array(core->instruction_array, core->IC); 
-
+    initialize_pipeline_array(core->pipeline_array, 5); 
     initialize_register_file(core->register_file); 
         core->current_instruction = (Command *)malloc(sizeof(Command));
         

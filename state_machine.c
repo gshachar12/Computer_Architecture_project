@@ -57,7 +57,7 @@ void BuildCommand(char * command_line, Command * com)
 
 
 
-int fetch_instruction(Core *core, int index) {
+int fetch_instruction(Core *core) {
     // Position the file pointer at the beginning (or desired location)
 
     if (core->instruction_file == NULL) {
@@ -97,14 +97,40 @@ int fetch_instruction(Core *core, int index) {
     }
 }
 
-void decode(Core *core, Command *com) {
+
+int detect_raw_hazard(Core *core) {
+
+
+    Command* decode = core->instruction_array[1]; // Decode stage instruction
+    for (int i = 2; i < 5; i++) {
+        Command* com = core->instruction_array[i]; // Other instructions in the pipeline
+        if(com == NULL)
+        {
+            return 0; 
+        }
+        // Debugging: Print instruction names for comparison
+        printf("com: %s\n", com->inst); // Assuming inst is a char* or char[]
+        printf("decode: %s\n", decode->inst);
+
+        // Check for RAW hazards
+        if ((decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt) ||
+            (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)) {
+            return 1; // Hazard detected
+        }
+    }
+    return 0; // No hazard detected
+}
+
+
+int decode(Core *core, Command *com) {
     // Build the Command struct from the command line
     BuildCommand(core->fetch_buffer, com);
-        printf("\nentered decode: %s\n", com->inst);
-
-    printf("opcode of com is: %d\n", com->opcode);
-    printf("%s", core->fetch_buffer);
-
+    printf("\nentered decode: %s\n", com->inst);
+    //printf("opcode of com is: %d\n", com->opcode);
+    printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
+    core->decode_buf->rs = com->rs;
+    core->decode_buf->rt = com->rt;
+    core->decode_buf->rd = com->rd;
     // Process the opcode and set control signals based on it
     switch (com->opcode) {
         case 0: // add
@@ -202,19 +228,21 @@ void decode(Core *core, Command *com) {
     }
 
     // Save register values into decode buffers
-
+    // if(detect_raw_hazard(core))
+    // {
+    //     printf("RAW hazard detected. Stalling fetch and decode.\n");
+    //     return 0; //decode isn't finished
+    // }
     //*(core->register_file[1]) = com->imm;
     Int_2_Hex(com->imm, core->register_file[1]);
     printf("---------------------reg1 = %d\n", Hex_2_Int_2s_Comp(core->register_file[1]));
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
-    core->decode_buf->rs = com->rs;
-    core->decode_buf->rt = com->rt;
-    core->decode_buf->rd = com->rd;
-    printf("imm = %d\n", com->imm);
-    printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);
 
+    //printf("imm = %d\n", com->imm);
+    printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);
+    return 1; //decode is finished
 }
 void execute(Core *core, Command *com) {
     com->state = EXEC;
@@ -444,5 +472,7 @@ void writeback_state(Command *com, Core *core) {
             printf("Unrecognized opcode %d for writeback.\n", com->opcode);
             break;
     }
+
+    core->wb_buf->finished =1;
 }
 

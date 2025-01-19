@@ -289,7 +289,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
         {
             case NO_COMMAND:
                 // No command, just snooping
-                printf("Snooping NO_COMMAND: No operation.\n");
+                printf("\nSnooping NO_COMMAND: No operation.\n");
                 bus->bus_shared = 0;  // Data is not shared
                 bus->bus_addr = 0;
                 break;
@@ -297,7 +297,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 caches_owning_block_id_array = check_shared_bus(caches,bus->bus_requesting_id, bus->bus_requesting_address); // Check if the data is in another cache, if yes, return the cache id
 
                 // Bus read operation : When a BusRd (Bus Read) transaction occurs on the bus, it indicates that a processor or cache is requesting a block of data from the memory system.
-                printf("Snooping BUS_READ\n"); 
+                printf("\nSnooping BUS_READ\n"); 
                 if(bus->stall)
                 {
                     caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
@@ -308,7 +308,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     // Data found in another cache
                 if(caches[caches_owning_block_id_array[0]]->tsram->cache[index].mesi_state == MODIFIED)
                 {
-                    printf("MODIFIED Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
+                    printf("\nMODIFIED Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
                     caches[bus->bus_requesting_id]->ack= flush_from_cache(caches[bus->bus_requesting_id], caches[caches_owning_block_id_array[0]], main_memory, bus->bus_requesting_address, bus,  index);
                     caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = SHARED;
                     caches[bus->bus_origid]->tsram->cache[index].mesi_state = SHARED;
@@ -316,7 +316,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 }
                 else
                 {
-                    printf("FOUND A VALID BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
+                    printf("\nFOUND A VALID BLOCK: Data found in cache %d, fetching from there...\n", caches_owning_block_id_array[0]);
                     caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
                 }
 
@@ -333,9 +333,9 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
 
                 else //invalid
                 {       
-                    printf("DIDN'T FIND A BLOCK: FETCHING DATA FROM MAIN MEMORY\n");
+                    printf("\nDIDN'T FIND A BLOCK: FETCHING DATA FROM MAIN MEMORY\n");
                     caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
-                    printf("ack: %d\n",caches[bus->bus_requesting_id]->ack );
+                    printf("\nack: %d\n",caches[bus->bus_requesting_id]->ack );
                     caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = EXCLUSIVE;
 
                     log_cache_state(caches[bus->bus_requesting_id] );

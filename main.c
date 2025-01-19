@@ -44,18 +44,19 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
     int first_command = 0;
     int last_command = 0;
     int hazard=0; 
-    int saved_last_command;
+    int hazard_flag=0;
+    int saved_last_command=0;
+    int num_fetched_commands = 0;
     Core* core = cores[0]; 
     // Print the content of the array
 
     int num_executed_commands=0;
     while(clock<max_cycles && !finished)
     {
-
-        finished = pipeline(cores[0], clock, bus, &num_executed_commands, &first_command, &last_command, &hazard);
+        finished = pipeline(cores[0], clock, bus, &num_fetched_commands, &num_executed_commands, &first_command, &last_command, &hazard);
         log_mesibus(bus, clock);
         snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
-        printf("%s\n\n\n------------------------------------------------------------: %s\n\n", BLUE, WHITE, clock);
+        printf("%s\n\n\n------------------------------------------------------------------------------------ %s\n\n", RED, WHITE, clock);
         printf("\n\n");
         clock++; 
     }
@@ -102,8 +103,13 @@ int main(int argc, char *argv[])
     FILE* dsram1_logfile = fopen("log_files/dsram1.txt", "wt");
     FILE* dsram2_logfile = fopen("log_files/dsram2.txt", "wt");
     FILE* dsram3_logfile = fopen("log_files/dsram3.txt", "wt");
+
     FILE* dsram_log_files[] = {dsram0_logfile, dsram1_logfile, dsram2_logfile, dsram3_logfile};
     FILE* tsram_log_files[] = {tsram0_logfile, tsram1_logfile, tsram2_logfile, tsram3_logfile};
+
+    FILE* pipline_logfile = fopen("log_files/pipeline_log.txt", "wt");
+    fclose(pipline_logfile);
+
     printf("tsram and dsram files are initialized");
     main_memory.memory_data = (int *)malloc(MAIN_MEMORY_SIZE * sizeof(int));
 

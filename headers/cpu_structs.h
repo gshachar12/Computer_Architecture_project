@@ -44,6 +44,7 @@ typedef struct cmd {
     int rm;
     int imm;  
     int state; 
+    int hazard; 
     ControlSignals control_signals;
 } Command;
 
@@ -73,6 +74,10 @@ typedef struct {
     int destination_register;  // Address of the memory operation (calculated in execute)
 } MemBuffer;
 
+typedef struct {
+    int finished;  
+} WriteBackBuffer;
+
 typedef struct Core {
     int core_id;
     int pc;                     // Program counter
@@ -84,11 +89,14 @@ typedef struct Core {
     DecodeBuffers* decode_buf;   // Decode buffers
     ExecuteBuffer* execute_buf; // Execute buffer for each core
     MemBuffer mem_buf;  // Memory buffer for each core
+    WriteBackBuffer* wb_buf;
     char register_file[NUM_REGS][9]; // Register file
     CACHE* cache; 
-    Command** instruction_array;     // Pointer to the instruction file
     MESI_bus* bus; 
     
+    Command** instruction_array;     // Pointer to the instruction file
+    Command** pipeline_array; 
+ 
 
 } Core;
 
