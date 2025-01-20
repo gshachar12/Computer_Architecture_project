@@ -4,6 +4,19 @@
 #include <string.h>
 
 
+int detect_hazard(Core* core, MESI_bus* bus)
+{   
+    int hazard=0; 
+    int RAW_hazard=0; // check for RAW hazard
+    int MEM_hazard=0; // check for MEM hazard
+  
+    RAW_hazard = detect_raw_hazard(core); 
+    if(bus->busy)
+        MEM_hazard = WB;
+    hazard = MEM_hazard>RAW_hazard? MEM_hazard: RAW_hazard; 
+    return hazard;
+}
+
 int state_machine(Core* core, MESI_bus* mesi_bus, int* hazard, int* num_fetched_commands ) {
     Command *com=core->current_instruction;
     switch (com->state) {
@@ -17,7 +30,7 @@ int state_machine(Core* core, MESI_bus* mesi_bus, int* hazard, int* num_fetched_
 
     case DECODE:
         *hazard = decode(core, com);
-        if(!*hazard)
+        
         printf("decode buffer: rd value - %d", core->decode_buf->rd_value);
         
         printf("\nDECODE PIPELINE Command properties: ");
@@ -107,11 +120,9 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* num_fetched_command
         printf("\nnum executed commands %d\n", *num_executed_commands);
         printf("\nnum fetched commands %d\n", *num_fetched_commands);
          printf("%s \nhazard %d\n%s ", MAGENTA, *hazard, WHITE);
-        *hazard = detect_raw_hazard(core); 
-         if (*hazard)  
-            first_command =EXEC;
-        else
-            first_command =FETCH;
+        *hazard = detect_hazard(core, mesi_bus); 
+        first_command =*hazard;
+     
 
         for(int i = FETCH; i<=WB;i++)
             core->pipeline_array[i]->state =i; 

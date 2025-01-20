@@ -117,7 +117,7 @@ int detect_raw_hazard(Core *core) {
         // Check for RAW hazards
         if ((decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt) ||
             (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)) {
-            return DECODE; // Hazard detected
+            return EXEC; // Hazard detected
         }
     }
     return 0; // No hazard detected
@@ -229,12 +229,6 @@ int decode(Core *core, Command *com) {
             break;
     }
 
-    //Save register values into decode buffers
-    if(detect_raw_hazard(core))
-    {
-        printf("RAW hazard detected. Stalling fetch and decode.\n");
-        return 1; //decode isn't finished
-    }
     *(core->register_file[1]) = com->imm;
     Int_2_Hex(com->imm, core->register_file[1]);
     printf("---------------------reg1 = %d\n", Hex_2_Int_2s_Comp(core->register_file[1]));
@@ -250,7 +244,7 @@ void execute(Core *core, Command *com) {
 
     int alu_result = 0;
     int address = 0;
-    int memory_or_not = 0;
+    int memory_or_not = 0; 
     printf("\nentered exec: %s\n", com->inst);
     if (com->control_signals.halt) {
         printf("Core %d: Halt instruction encountered. Stopping execution.\n", core->core_id);
