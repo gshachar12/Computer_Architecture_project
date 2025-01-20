@@ -136,7 +136,7 @@ void initialize_pipeline_array(Command** pipeline_array, int instruction_count)
             return; // Exit the function to indicate failure
         }
         initialize_command(pipeline_array[i]);
-
+        // pipeline_array[i]->state = i;  
 
     }
 

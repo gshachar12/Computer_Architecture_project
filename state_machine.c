@@ -47,7 +47,7 @@ void BuildCommand(char * command_line, Command * com)
 	com->rs     = (int) strtol ((char[]) { command_line[3], 0 }, NULL, 16);
 	com->rt     = (int) strtol ((char[]) { command_line[4], 0 }, NULL, 16);
 	com->imm   = (int) strtol ((char[]) { command_line[5], command_line[6], command_line[7], 0 }, NULL, 16);
-    com->state = DECODE; 
+
 	if (com->imm >= 2048)
   	  {
       com->imm -= 4096;  // if the number is greater then 2048 it means that sign bit it on and hence we have to deduce 2^12 from the number
@@ -75,7 +75,7 @@ int fetch_instruction(Core *core) {
         // Debugging print: print the entire instruction
         printf("Fetched instruction: %s\n", instruction);
         fflush(stdout);
-
+        strcpy(core->current_instruction->inst, instruction);  
         // Allocate memory for fetch_buffer and copy the instruction
         core->fetch_buffer = malloc(strlen(instruction) + 1);
         if (core->fetch_buffer == NULL) {
@@ -99,23 +99,25 @@ int fetch_instruction(Core *core) {
 
 
 int detect_raw_hazard(Core *core) {
+    if (strcmp(core->pipeline_array[DECODE]->inst, "DONE")==0 || strcmp(core->pipeline_array[DECODE]->inst, "NOP")==0 )
+        return 0;
 
+    Command* decode = core->pipeline_array[DECODE]; // Decode stage instruction
+    printf("\ndecode buffer: rd %d  rs %d rt %d \n", decode->rd, decode->rs, decode->rt); 
 
-    Command* decode = core->instruction_array[1]; // Decode stage instruction
-    for (int i = 2; i < 5; i++) {
-        Command* com = core->instruction_array[i]; // Other instructions in the pipeline
+    for (int i = EXEC; i < WB; i++) {
+        Command* com = core->pipeline_array[i]; // Other instructions in the pipeline
+
+        printf("\ncom buffer: rd %d  rs %d rt %d \n", com->rd, com->rs, com->rt); 
+
         if(com == NULL)
         {
             return 0; 
         }
-        // Debugging: Print instruction names for comparison
-        printf("com: %s\n", com->inst); // Assuming inst is a char* or char[]
-        printf("decode: %s\n", decode->inst);
-
         // Check for RAW hazards
         if ((decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt) ||
             (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)) {
-            return 1; // Hazard detected
+            return DECODE; // Hazard detected
         }
     }
     return 0; // No hazard detected
@@ -124,7 +126,7 @@ int detect_raw_hazard(Core *core) {
 
 int decode(Core *core, Command *com) {
     // Build the Command struct from the command line
-    BuildCommand(core->fetch_buffer, com);
+    BuildCommand(com->inst, com);
     printf("\nentered decode: %s\n", com->inst);
     //printf("opcode of com is: %d\n", com->opcode);
     printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
@@ -227,13 +229,13 @@ int decode(Core *core, Command *com) {
             break;
     }
 
-    // Save register values into decode buffers
-    // if(detect_raw_hazard(core))
-    // {
-    //     printf("RAW hazard detected. Stalling fetch and decode.\n");
-    //     return 0; //decode isn't finished
-    // }
-    //*(core->register_file[1]) = com->imm;
+    //Save register values into decode buffers
+    if(detect_raw_hazard(core))
+    {
+        printf("RAW hazard detected. Stalling fetch and decode.\n");
+        return 1; //decode isn't finished
+    }
+    *(core->register_file[1]) = com->imm;
     Int_2_Hex(com->imm, core->register_file[1]);
     printf("---------------------reg1 = %d\n", Hex_2_Int_2s_Comp(core->register_file[1]));
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
@@ -242,10 +244,10 @@ int decode(Core *core, Command *com) {
 
     //printf("imm = %d\n", com->imm);
     printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);
-    return 1; //decode is finished
+    return 0; //decode is finished
 }
 void execute(Core *core, Command *com) {
-    com->state = EXEC;
+
     int alu_result = 0;
     int address = 0;
     int memory_or_not = 0;
@@ -399,7 +401,7 @@ void execute(Core *core, Command *com) {
 }
 
 void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
-    com->state = MEM;
+
     uint32_t data = 0;
     // If memory access is required (i.e., for Load/Store operations)
     core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back

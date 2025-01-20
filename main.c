@@ -53,7 +53,7 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
     int num_executed_commands=0;
     while(clock<max_cycles && !finished)
     {
-        finished = pipeline(cores[0], clock, bus, &num_fetched_commands, &num_executed_commands, &first_command, &last_command, &hazard);
+        finished = pipeline( core, clock, bus, &num_fetched_commands, &num_executed_commands, &last_command, &hazard);
         log_mesibus(bus, clock);
         snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
         printf("%s\n\n\n------------------------------------------------------------------------------------ %s\n\n", RED, WHITE, clock);

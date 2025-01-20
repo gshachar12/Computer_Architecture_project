@@ -32,6 +32,7 @@ struct dsram;
 void print_register_file_to_file(const char *filename, Core* core);
 void BuildCommand(char * command_line, Command * com);
 int fetch_instruction(Core *core);
+int detect_raw_hazard(Core* core); 
 int decode(Core *core, Command *com);
 void execute(Core *core, Command *com);
 void memory_state(Command *com, Core *core, MESI_bus* bus);
