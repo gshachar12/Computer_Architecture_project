@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "state_machine.h"
+#include "initialize.h"
 
 /* Function prototypes */
 int state_machine(Core *core, Command *com, int *stall, MESI_bus* mesi_bus, int* hazard);

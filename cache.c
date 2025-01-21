@@ -119,7 +119,6 @@ void send_data_from_main_memory_to_bus(MainMemory *main_memory, MESI_bus *bus, i
 * Description: check if a block is in another cache. if yes, return array of all caches_id that have the block
 *******************************************************************************/
 int* check_shared_bus(CACHE* caches[], int origid, int address) {
-    printf("check_shared_bus started: found data in another cache? ");
     uint32_t tag, index, block_offset;
     get_cache_address_parts(address, &tag, &index, &block_offset);
     //printf("%s origid: %d %s, ", RED, origid, WHITE);
@@ -137,7 +136,7 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
             // Dynamically resize the cache_indexes array to hold the found cache index
             cache_indexes = realloc(cache_indexes, (found_count + 1) * sizeof(int));
             if (cache_indexes == NULL) {
-                fprintf(stderr, "Memory allocation failed for cache_indexes.\n");
+                fprintf(stderr, "\nMemory allocation failed for cache_indexes.\n");
                 exit(EXIT_FAILURE);
             }
             cache_indexes[found_count] = i;  // Store the cache index
@@ -210,20 +209,21 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
     {
         main_memory_stalls_counter++; 
         bus->stall =1;
+        printf("\nstalling for: %d cycles\n", main_memory_stalls_counter);
         return 0; 
     }
 
     else
     {   bus->stall =0;
         if(num_words_sent<BLOCK_SIZE){
-            printf("blocks sent: %d\n",block_offset_counter );
+            printf("\nblocks sent: %d\n", block_offset_counter );
             send_data_from_main_memory_to_bus(main_memory, bus, (address & ~3) + block_offset_counter);
             bus->bus_cmd=FLUSH;
             block_offset_counter++;
             num_words_sent++;
-            return 0; 
+           
         }
-        else // transaction finished
+        if(num_words_sent == BLOCK_SIZE) // transaction finished
         {
         printf("\nfinished stalling: %d\n",main_memory_stalls_counter );
 
@@ -235,6 +235,7 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
         return 1; 
 
         }
+        return 0; 
 
 
     }
@@ -432,7 +433,7 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     bus->busy =0;
 
                     log_cache_state(caches[bus->bus_requesting_id]);
-                                        printf("%s \nreceived ack\n %s",YELLOW, WHITE );
+                    printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
 
                     //if (caches_owning_block_id_array!=NULL)
                       //  log_cache_state(caches[caches_owning_block_id_array[0]]);
@@ -476,7 +477,7 @@ bool cache_read(CACHE* cache,  uint32_t address, uint32_t *data, MESI_bus *mesi_
     {
         *data = dsram_line->data[block_offset];
         printf("Cache hit! Data: %u\n", *data);
-        cache->ack=1; 
+        cache->ack = 1; 
         return 1;
     }
 

@@ -59,42 +59,13 @@ void BuildCommand(char * command_line, Command * com)
 
 int fetch_instruction(Core *core) {
     // Position the file pointer at the beginning (or desired location)
-
-    if (core->instruction_file == NULL) {
-        perror("Instruction file is not open");
-        return 0; // Failure
-    }
-
-    char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
-
-    // Fetch the instruction using fgets
-    if (fgets(instruction, sizeof(instruction), core->instruction_file) != NULL) {
-        // Remove trailing newline character (if present)
-        instruction[strcspn(instruction, "\n")] = '\0';
-
-        // Debugging print: print the entire instruction
-        printf("Fetched instruction: %s\n", instruction);
-        fflush(stdout);
-        strcpy(core->current_instruction->inst, instruction);  
-        // Allocate memory for fetch_buffer and copy the instruction
-        core->fetch_buffer = malloc(strlen(instruction) + 1);
-        if (core->fetch_buffer == NULL) {
-            perror("Memory allocation failed for fetch_buffer");
-            return 0; // Failure
-        }
-        strcpy(core->fetch_buffer, instruction);
-
-        // Increment program counter (pc)
-        core->pc++;
-        return 1; // Success
-    } else {
-        if (feof(core->instruction_file)) {
-            printf("End of instruction file reached\n");
-        } else {
-            perror("Error reading instruction file");
-        }
-        return 0; // Failure
-    }
+    // Debugging print: print the entire instruction
+    printf("Fetched instruction: %s\n", core->instruction_array[core->pc]);
+    core->pipeline_array[FETCH] = core->instruction_array[core->pc]; 
+    // Increment program counter (pc)
+    core->pc++;
+    return 1; // Success
+    
 }
 
 
@@ -115,24 +86,52 @@ int detect_raw_hazard(Core *core) {
             return 0; 
         }
         // Check for RAW hazards
-        if ((decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt) ||
-            (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)) {
-            return EXEC; // Hazard detected
-        }
+        
+     if (((decode->rs != 0 && (decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt)) ||
+     (decode->rt != 0 && (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)))) 
+    return EXEC; // Hazard detected
+
     }
     return 0; // No hazard detected
 }
 
 
+void nullify_command(Command *src) {
+
+    // Copy string
+    
+    strcpy(src->inst , "DONE");
+    // Copy primitive fields
+    src->opcode = -1;
+    src->rd = -1;
+    src->rs = -1;
+    src->rt = -1;
+    src->rm = -1;
+    src->imm = -1;
+    src->hazard = -1;
+
+    // Copy nested structure
+    //dest->control_signals = rc->control_signals;
+   
+}
+
 int decode(Core *core, Command *com) {
     // Build the Command struct from the command line
     BuildCommand(com->inst, com);
+    Int_2_Hex(com->imm, core->register_file[1]);
     printf("\nentered decode: %s\n", com->inst);
     //printf("opcode of com is: %d\n", com->opcode);
+
     printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
     core->decode_buf->rs = com->rs;
     core->decode_buf->rt = com->rt;
     core->decode_buf->rd = com->rd;
+
+    
+   // *(core->register_file[1]) = com->imm;
+    core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
+    core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
+    core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
     // Process the opcode and set control signals based on it
     switch (com->opcode) {
         case 0: // add
@@ -141,100 +140,62 @@ int decode(Core *core, Command *com) {
         case 3: // or
         case 4: // xor
         case 5: // mul
-            com->control_signals.alu_src = 0;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 1;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 0;
             break;
 
         case 6: // sll (shift left logical)
         case 7: // sra (shift right arithmetic)
         case 8: // srl (shift right logical)
-            com->control_signals.alu_src = 1;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 1;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 0;
             break;
 
         case 9: // beq (branch if equal)
+            if(core->decode_buf->rs_value == core->decode_buf->rt_value) com->btaken = 1;
+            break;
         case 10: // bne (branch if not equal)
+            if(core->decode_buf->rs_value != core->decode_buf->rt_value) com->btaken = 1;
+            break;
         case 11: // blt (branch if less than)
+            if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            break;
         case 12: // bgt (branch if greater than)
+            if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
+            break;
+
         case 13: // ble (branch if less or equal)
+            if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            break;
+
         case 14: // bge (branch if greater or equal)
-            com->control_signals.alu_src = 0;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 0;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 1;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 0;
+            if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
             break;
 
         case 15: // jal (jump and link)
-            com->control_signals.alu_src = 0;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 1;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 1;
-            com->control_signals.halt = 0;
+
             break;
 
         case 16: // lw (load word)
-            com->control_signals.alu_src = 1;
-            com->control_signals.mem_to_reg = 1;
-            com->control_signals.reg_write = 1;
-            com->control_signals.mem_read = 1;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 0;
+
             break;
 
         case 17: // sw (store word)
-            com->control_signals.alu_src = 1;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 0;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 1;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 0;
+
             break;
 
         case 20: // halt
-            com->control_signals.alu_src = 0;
-            com->control_signals.mem_to_reg = 0;
-            com->control_signals.reg_write = 0;
-            com->control_signals.mem_read = 0;
-            com->control_signals.mem_write = 0;
-            com->control_signals.branch = 0;
-            com->control_signals.jump = 0;
-            com->control_signals.halt = 1;
-            break;
+            core->halted = 1;
 
         default:
             printf("Core %d: Unrecognized opcode: %d\n", core->core_id, com->opcode);
             break;
     }
 
-    *(core->register_file[1]) = com->imm;
-    Int_2_Hex(com->imm, core->register_file[1]);
-    printf("---------------------reg1 = %d\n", Hex_2_Int_2s_Comp(core->register_file[1]));
-    core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
-    core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
-    core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
+    if(com->btaken == 1)
+        {
+        core->pc = (core->decode_buf->rd_value & 0x3FF);
+        printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
+        core->pipeline_array [0]= (Command *)malloc(sizeof(Command));
+        nullify_command(core->pipeline_array[FETCH]); // command in fetch mode is no longer important 
+        
+        }
 
     //printf("imm = %d\n", com->imm);
     printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);

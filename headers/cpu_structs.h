@@ -43,6 +43,7 @@ typedef struct cmd {
     int rt;
     int rm;
     int imm;  
+    int btaken; 
     int state; 
     int hazard; 
     ControlSignals control_signals;
@@ -81,7 +82,8 @@ typedef struct {
 typedef struct Core {
     int core_id;
     int pc;                     // Program counter
-    int IC;    
+    int IC;     
+    int halted;
     FILE* instruction_file; 
     char* log_file;
     char* fetch_buffer; 

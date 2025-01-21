@@ -110,6 +110,8 @@ void initialize_command(Command* cmd)
     cmd->rs = 0;
     cmd->rt = 0;
     cmd->rm = 0;
+    cmd->btaken =0; 
+
     cmd->imm = 0;
     cmd->state = 0;
     cmd->hazard = 0; 
@@ -143,13 +145,23 @@ void initialize_pipeline_array(Command** pipeline_array, int instruction_count)
 }
 
 
-void initialize_instruction_array(Command** instruction_array, int instruction_count)
+void initialize_instruction_array(Command** instruction_array, int instruction_count, FILE* instruction_file)
 {
+    char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
 
-    for (int i = 0; i < instruction_count; i++) {
+    if (instruction_file == NULL) {
+        perror("Instruction file is not open");
+        return; // Failure
+    }  
+
+    // Fetch the instruction using fgets
+
+    for (int i = 0; i < instruction_count; i++) 
+    {
         instruction_array[i] = (Command *)malloc(sizeof(Command));
         
-        if (instruction_array[i] == NULL) {
+        if (instruction_array[i] == NULL) 
+        {
             perror("Memory allocation failed for cmd");
 
             // Free already allocated memory
@@ -159,7 +171,13 @@ void initialize_instruction_array(Command** instruction_array, int instruction_c
 
             return; // Exit the function to indicate failure
         }
+
         initialize_command(instruction_array[i]);
+        if (fgets(instruction, sizeof(instruction), instruction_file) != NULL) 
+        {
+            instruction[strcspn(instruction, "\n")] = '\0';
+            strcpy(instruction_array[i]->inst, instruction);  
+        }
 
 
     }
@@ -218,6 +236,7 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
     core->log_file = pipeline_log_file; 
     core->core_id = core_id;
     core->pc = 0;
+    core->halted = 0;
     core->IC = instruction_count;
     core->instruction_file = imem_file;
         // Allocate memory for instruction_array (pointer to an array of Command pointers)
@@ -239,7 +258,7 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
 
  
 
-    initialize_instruction_array(core->instruction_array, core->IC); 
+    initialize_instruction_array(core->instruction_array, core->IC, core->instruction_file); 
     initialize_pipeline_array(core->pipeline_array, 5); 
     initialize_register_file(core->register_file); 
         core->current_instruction = (Command *)malloc(sizeof(Command));

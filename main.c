@@ -3,7 +3,6 @@
 #include <string.h>
 #include "headers/asm.h"
 #include "headers/pipeline.h"
-#include "headers/initialize.h"
 // Function to initialize Core
 
 static int lastGrantedCore = -1;
@@ -86,13 +85,15 @@ int main(int argc, char *argv[])
     printf("files are: %s, %s, %s\n", argv[1], argv[2],argv[3] );
 
     FILE* fp_asm = fopen(argv[1], "rt");
-	FILE* fp_imemout = fopen(argv[2], "r+");
+	FILE* fp_imemout = fopen(argv[2], "wt");
 	FILE* fp_dmemout = fopen(argv[3], "wt");
 
 	if (!fp_asm || !fp_imemout || !fp_dmemout) {
 		printf("ERROR: couldn't open files\n");
 		exit(1);
 	}
+
+
     
     FILE* tsram0_logfile = fopen("log_files/tsram0.txt", "wt");
     FILE* tsram1_logfile = fopen("log_files/tsram1.txt", "wt");
@@ -112,14 +113,14 @@ int main(int argc, char *argv[])
 
     printf("tsram and dsram files are initialized");
     main_memory.memory_data = (int *)malloc(MAIN_MEMORY_SIZE * sizeof(int));
-
     initialize_main_memory(&main_memory, "mem_files/main_memory.txt");
     printf("\nFinished initializing main_memory\n");
     initialize_mesi_bus(&mesi_bus, "mem_files/mesi_bus.txt");
     printf("\nFinished initializing mesi_bus\n");
 
-
     int instruction_count = interpret_file(fp_asm, fp_imemout, fp_dmemout);
+    fclose(fp_imemout);
+    fp_imemout = fopen(argv[2], "rt");
 
     char instruction[INSTRUCTION_LENGTH + 1]; // Buffer for fetched instruction
 
