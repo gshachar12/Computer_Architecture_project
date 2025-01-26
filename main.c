@@ -39,12 +39,12 @@ int roundRobinArbitrator(MESI_bus* bus, int busRequests[NUM_CORES]) {
     }
 
     // round robin
-    for (int i = 1; i <= NUM_CORES; i++) {
+    for (int i = 0; i < NUM_CORES; i++) {
         int coreId = (lastGrantedCore + i) % NUM_CORES;
-        if (busRequests[coreId]) {
+       // if (busRequests[coreId]) {
             lastGrantedCore = coreId;
             return coreId;
-        }
+        //}
     }
     return -1;
 }
@@ -65,16 +65,26 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
     int core_id;
     while(clock<max_cycles && !finished)
     {
+
+        printf("\n%s-------------------------------------- CLOCK %d-------------------------------------------------------------%s\n", BLUE, clock, WHITE);
+
+        for (int core_id=0; core_id < NUM_CORES-2; core_id++)
+        {
+
+
+        printf("\n%sRunning core: %d%s\n", BRIGHT_CYAN,core_id, WHITE );
         //core_id = roundRobinArbitrator(bus, busRequests);
-        //core_id = 0; 
         //core = cores[core_id]; 
-        finished = pipeline( core, clock, bus, &last_command);
+        finished = pipeline( cores[core_id], clock, bus, &last_command);
         log_mesibus(bus, clock);
-        log_cache_status(core, clock); 
+        log_cache_status(cores[core_id], clock); 
         snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
         printf("%s\n\n\n------------------------------------------------------------------------------------ %s\n\n", RED, WHITE, clock);
         printf("\n\n");
+        }
+        
         clock++; 
+
         
     }
 

@@ -97,7 +97,6 @@ int finished(Core* core)
 int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command) 
 {
     int first_command=0;
-    printf("\n%s-------------------------------------- CLOCK %d-------------------------------------------------------------%s\n", BLUE, clock, WHITE);
     detect_hazard(core, mesi_bus); 
     printf("%s \nhazard %d\n%s ", MAGENTA, core->hazard, WHITE);
     first_command = core->hazard;
