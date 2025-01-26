@@ -96,7 +96,8 @@ typedef struct
 
 typedef struct {
     int *memory_data;  // Pointer to the memory array
-    FILE *logfile;     // Log file pointer
+    FILE* memin;     // Log file pointer
+    FILE* memout; 
 } MainMemory;
 
 #endif // CPU_STRUCTS_H

@@ -14,17 +14,19 @@ int pc;
 int clk; 
 
 //Function to print the register file to a file (all registers in the same row)
-void print_register_file_to_file(const char *filename, Core* core) {
-    FILE *file = fopen(filename, "w");  // Open in append mode to add to the file
-    if (file == NULL) {
+void print_regout_array_to_file( Core* core) {
+
+    FILE *file = core->regout_file;  // Open in append mode to add to the file
+    if (file == NULL)
+    {
         perror("Error opening file for writing");
         return;
     }
     printf("\nwriting in file\n");
     // Iterate through the register file and print each register value in the same row
     for (int i = 0; i < NUM_REGS; i++) {
-        printf("\nregister %d %s", i, core->register_file[i]);
-        fprintf(file, "%s ", core->register_file[i]);  // Print each register value separated by space
+        printf("\nregister %d %s", i, core->regout_array[i]);
+        fprintf(file, "%s ", core->regout_array[i]);  // Print each register value separated by space
     }
 
     fprintf(file, "\n");  // End the row with a newline
@@ -69,31 +71,132 @@ int fetch_instruction(Core *core) {
 }
 
 
-int detect_raw_hazard(Core *core) {
-    if (strcmp(core->pipeline_array[DECODE]->inst, "DONE")==0 || strcmp(core->pipeline_array[DECODE]->inst, "NOP")==0 )
-        return 0;
+void detect_raw_hazard(Core *core) {
+    if (strcmp(core->pipeline_array[DECODE]->inst, "DONE") == 0 || strcmp(core->pipeline_array[DECODE]->inst, "NOP") == 0)
+        {    core->hazard = 0; 
+    return; // No hazard detected
+    }
 
     Command* decode = core->pipeline_array[DECODE]; // Decode stage instruction
-    printf("\ndecode buffer: rd %d  rs %d rt %d \n", decode->rd, decode->rs, decode->rt); 
+    int decode_opcode = decode->opcode;
+    printf("\nDecode buffer: rd %d  rs %d rt %d \n", decode->rd, decode->rs, decode->rt);
 
+    // Iterate over pipeline stages from EXEC to WB
     for (int i = EXEC; i < WB; i++) {
         Command* com = core->pipeline_array[i]; // Other instructions in the pipeline
 
-        printf("\ncom buffer: rd %d  rs %d rt %d \n", com->rd, com->rs, com->rt); 
-
-        if(com == NULL)
-        {
-            return 0; 
+        if (com == NULL) {
+            continue; // Skip null instructions
         }
-        // Check for RAW hazards
-        
-     if (((decode->rs != 0 && (decode->rs == com->rd || decode->rs == com->rs || decode->rs == com->rt)) ||
-     (decode->rt != 0 && (decode->rt == com->rd || decode->rt == com->rs || decode->rt == com->rt)))) 
-    return EXEC; // Hazard detected
 
+        printf("\nPipeline stage %d: rd %d  rs %d rt %d \n", i, com->rd, com->rs, com->rt);
+
+        // Check for hazards based on opcode
+        switch (decode_opcode) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
+                {
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                    }
+                    // General RAW hazard detection for R-type instructions
+                    if ((decode->rs != 0 && decode->rs == com->rd) || 
+                        (decode->rt != 0 && decode->rt == com->rd)) {
+                                        core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                }
+                }
+                break;
+
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                // RAW hazard detection for branch instructions
+                if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                    }
+                if ((com->opcode >= 0 && com->opcode <= 8) || com->opcode == 16)
+                {
+                if ((decode->rs != 0 && decode->rs == com->rd) || 
+                    (decode->rt != 0 && decode->rt == com->rd) ||
+                    (decode->rd != 0 && decode->rd == com->rd)) {
+                                        core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                }
+
+                }
+                break;
+
+            case 15:
+            if ((com->opcode >= 0 && com->opcode <= 8) || com->opcode == 16)
+            {
+                // RAW hazard detection for JAL (Jump and Link)
+                if (decode->rd == com->rd) {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                }
+            }
+                break;
+            case 16:
+            // RAW hazard detection for LW (depends on rs)
+                if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
+                {
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                    }
+                    // General RAW hazard detection for R-type instructions
+                    if ((decode->rs != 0 && decode->rs == com->rd) || 
+                        (decode->rt != 0 && decode->rt == com->rd)) {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                }
+                }
+                break;
+            // Store Word
+            case 17:
+                if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
+                {
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected // Hazard detected
+                    }
+                    // General RAW hazard detection for Store instructions
+                if ((decode->rs != 0 && decode->rs == com->rd) || 
+                    (decode->rt != 0 && decode->rt == com->rd) ||
+                    (decode->rd != 0 && decode->rd == com->rd)) {
+                    core->hazard = EXEC;  
+                    return; // Hazard detected
+                }
+                }
+                
+                break;        
+            default:
+                // No specific RAW hazard logic for other instructions
+                break;
+        }
     }
-    return 0; // No hazard detected
+    core->hazard = 0; 
+    return; // No hazard detected
 }
+
 
 
 void nullify_command(Command *src) {
@@ -106,32 +209,39 @@ void nullify_command(Command *src) {
     src->rd = -1;
     src->rs = -1;
     src->rt = -1;
-    src->rm = -1;
     src->imm = -1;
     src->hazard = -1;
 
     // Copy nested structure
-    //dest->control_signals = rc->control_signals;
+    // dest->control_signals = rc->control_signals;
    
 }
 
 int decode(Core *core, Command *com) {
     // Build the Command struct from the command line
     BuildCommand(com->inst, com);
-    Int_2_Hex(com->imm, core->register_file[1]);
+    Int_2_Hex(com->imm, core->regout_array[1]);
     printf("\nentered decode: %s\n", com->inst);
     //printf("opcode of com is: %d\n", com->opcode);
 
-    printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
     core->decode_buf->rs = com->rs;
     core->decode_buf->rt = com->rt;
     core->decode_buf->rd = com->rd;
+    printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
-    
-   // *(core->register_file[1]) = com->imm;
-    core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->register_file[com->rs]);
-    core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->register_file[com->rt]);
-    core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->register_file[com->rd]);
+
+
+    if (core->hazard)
+        { 
+            printf ("\n%s waiting for hazard to end%s\n ",RED, WHITE ); 
+            return 0; 
+        }
+   // *(core->regout_array[1]) = com->imm;
+    core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->regout_array[com->rs]);
+    core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->regout_array[com->rt]);
+    core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->regout_array[com->rd]);
+    printf("\nno hazard: command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value , core->decode_buf->rt_value );
+
     // Process the opcode and set control signals based on it
     switch (com->opcode) {
         case 0: // add
@@ -149,7 +259,7 @@ int decode(Core *core, Command *com) {
 
         case 9: // beq (branch if equal)
             if(core->decode_buf->rs_value == core->decode_buf->rt_value) com->btaken = 1;
-            break;
+            break;  
         case 10: // bne (branch if not equal)
             if(core->decode_buf->rs_value != core->decode_buf->rt_value) com->btaken = 1;
             break;
@@ -207,15 +317,10 @@ void execute(Core *core, Command *com) {
     int address = 0;
     int memory_or_not = 0; 
     printf("\nentered exec: %s\n", com->inst);
-    if (com->control_signals.halt) {
-        printf("Core %d: Halt instruction encountered. Stopping execution.\n", core->core_id);
-        return;
-    }
-
-
     switch (com->opcode) {
         case 0: // ADD (R-type)
             alu_result = core->decode_buf->rs_value + core->decode_buf->rt_value;
+
             memory_or_not = 0;
             break;
 
@@ -308,7 +413,7 @@ void execute(Core *core, Command *com) {
             break;
 
         case 15: // JAL (Jump and Link)
-            *(core->register_file[15]) = core->pc; 
+            *(core->regout_array[15]) = core->pc; 
             core->pc = (core->decode_buf->rd_value & 0x3FF);  // Jump to target address
             core->execute_buf->is_branch = 1;
             memory_or_not = 0;
@@ -330,8 +435,6 @@ void execute(Core *core, Command *com) {
         case 20: // HALT
             com->control_signals.halt = 1;
             memory_or_not = 0;
-            printf("Core %d: Halt instruction encountered. Stopping execution.\n", core->core_id);
-            exit(0);
             return;
 
         default:
@@ -350,7 +453,7 @@ void execute(Core *core, Command *com) {
     core->execute_buf->rd_value = core->decode_buf->rd_value;
     core->execute_buf->is_branch = core->execute_buf->is_branch || 0;  // Ensure default value is 0
     core->execute_buf->mem_busy = memory_or_not;  // Set mem_busy if a memory operation is in progress
-    printf("EXECUTE BUFFER: alu_result: %d, destination: %d, mem_address: %d, memory_or_not: %d\n", core->execute_buf->alu_result, core->execute_buf->destination, core->execute_buf->mem_address, core->execute_buf->memory_or_not);
+    printf("EXECUTE BUFFER: %s alu_result%s: %d, destination: %d, mem_address: %d, memory_or_not: %d\n", YELLOW, WHITE,  core->execute_buf->alu_result, core->execute_buf->destination, core->execute_buf->mem_address, core->execute_buf->memory_or_not);
 
 
 }
@@ -363,7 +466,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
     printf("core->execute_buf->memory_or_not: %d, address: %d, data(if writing): %d\n", core->execute_buf->memory_or_not, core->execute_buf->mem_address, core->execute_buf->rd_value);
     if (core->execute_buf->memory_or_not == 1) {  // Memory operation indicator (load/store)
 
-        if (com->control_signals.mem_read == 1) {  // Load Word (LW)
+        if (com->opcode == 16) {  // Load Word (LW)
             // Cache read instead of direct memory read for the specific core
 
             bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile
@@ -376,9 +479,8 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
 
         }
 
-        if (com->control_signals.mem_write == 1) {  // Store Word (SW)
+        if (com->opcode == 17) {  // Store Word (SW)
             // Cache write instead of direct memory write for the specific core
-            
             cache_write(core->cache, core->execute_buf->mem_address, core->execute_buf->rd_value,  mesi_bus);  // Pass the logfile
             printf("Memory Write (Cache): Stored value %d to address %d\n", core->execute_buf->rd_value, core->execute_buf->mem_address);
         }
@@ -386,6 +488,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
         // No memory operation, directly use the ALU result
         core->mem_buf.load_result = core->execute_buf->alu_result;
         core->mem_buf.destination_register = core->execute_buf->destination;
+        printf("\ncore->mem_buf %d\n", core->mem_buf.load_result);
         printf("No memory operation needed.\n");
     }
 }
@@ -403,20 +506,22 @@ void writeback_state(Command *com, Core *core) {
         case 7: // SRA (Shift Right Arithmetic)
         case 8: // SRL (Shift Right Logical)
             // Write back the result from the memory buffer to the register file
-            Int_2_Hex(core->mem_buf.load_result, core->register_file[core->mem_buf.destination_register]);
-            //printf("data written into register = %d", Hex_2_Int_2s_Comp(core->register_file[core->mem_buf.destination_register]));
+
+            Int_2_Hex(core->mem_buf.load_result, core->regout_array[core->mem_buf.destination_register]);
+
+            //printf("data written into register = %d", Hex_2_Int_2s_Comp(core->regout_array[core->mem_buf.destination_register]));
             break;
         
         case 15: // JAL (Jump and Link)
             // Store the return address (PC + 1) into the link register (usually $ra or $15)
 
-            Int_2_Hex(core->pc + 1, core->register_file[15]);
+            Int_2_Hex(core->pc + 1, core->regout_array[15]);
             break;
 
         case 16: // LW (Load Word)
             // Write the loaded data to the destination register
   
-            Int_2_Hex(core->mem_buf.load_result, core->register_file[core->mem_buf.destination_register]);
+            Int_2_Hex(core->mem_buf.load_result, core->regout_array[core->mem_buf.destination_register]);
             break;
 
         case 17: // SW (Store Word) - No write-back to register
@@ -429,7 +534,7 @@ void writeback_state(Command *com, Core *core) {
             printf("Unrecognized opcode %d for writeback.\n", com->opcode);
             break;
     }
-
+    core->hazard = 0; 
     core->wb_buf->finished =1;
 }
 

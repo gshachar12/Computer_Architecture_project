@@ -13,19 +13,17 @@
  void log_main_memory(MainMemory *main_memory) {
     // Log DSRAM state
     char hex_num[9];
-    if (main_memory->logfile == NULL) {
-        printf("Error: Logfile not initialized for MainMemory.\n");
-        return; // Prevent further execution if logfile is not available
-    }
-
     for (int i = 0; i < MAIN_MEMORY_SIZE; i++) {
         Int_2_Hex(main_memory->memory_data[i], hex_num);
-        fprintf(main_memory->logfile, "%s" , hex_num);
-        fprintf(main_memory->logfile, "\n");
+        fprintf(main_memory->memout, "%s\n" , hex_num);
+       
 
     }
-    fflush(main_memory->logfile);
+    fflush(main_memory->memout);
 }
+
+
+
 // Extract the tag, index, and block offset from an address
 void get_cache_address_parts(uint32_t address, uint32_t *tag, uint32_t *index, uint32_t *block_offset) {
     *block_offset = address & ((1 << BLOCK_OFFSET_BITS) - 1);  // Extract block offset (2 bits)
@@ -251,6 +249,7 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
         send_data_to_bus(bus, modified_cache->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, (address & ~3)+block_offset_counter, requesting->cache_id);
         requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
         main_memory->memory_data[bus->bus_addr] = bus->bus_data;
+    printf("%s flush from cache %s %d", CYAN, WHITE, main_memory->memory_data[bus->bus_addr] );
         bus->bus_cmd=FLUSH;
 
         block_offset_counter++;

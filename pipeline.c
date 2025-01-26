@@ -6,20 +6,18 @@
 #include <string.h>
 
 
-int detect_hazard(Core* core, MESI_bus* bus)
+void detect_hazard(Core* core, MESI_bus* bus)
 {   
-    int hazard=0; 
     int RAW_hazard=0; // check for RAW hazard
     int MEM_hazard=0; // check for MEM hazard
   
-    RAW_hazard = detect_raw_hazard(core); 
+    detect_raw_hazard(core); 
     if(bus->busy)
         MEM_hazard = WB;
-    hazard = MEM_hazard>RAW_hazard? MEM_hazard: RAW_hazard; 
-    return hazard;
+    core->hazard = MEM_hazard>RAW_hazard? MEM_hazard: core->hazard; 
 }
 
-int state_machine(Core* core, MESI_bus* mesi_bus, int* hazard ) {
+int state_machine(Core* core, MESI_bus* mesi_bus) {
     Command *com=core->current_instruction;
     switch (com->state) {
     case FETCH:
@@ -30,12 +28,7 @@ int state_machine(Core* core, MESI_bus* mesi_bus, int* hazard ) {
         break;
 
     case DECODE:
-        *hazard = decode(core, com);
-        
-        printf("decode buffer: rd value - %d", core->decode_buf->rd_value);
-        
-        printf("\nDECODE PIPELINE Command properties: ");
-        printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
+        decode(core, com);
         break;
 
     case EXEC:
@@ -81,7 +74,6 @@ Command *copy_command(const Command *src) {
     dest->rd = src->rd;
     dest->rs = src->rs;
     dest->rt = src->rt;
-    dest->rm = src->rm;
     dest->imm = src->imm;
     dest->state = src->state;
     dest->hazard = src->hazard;
@@ -102,19 +94,13 @@ int finished(Core* core)
 
 }
 
-int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* num_fetched_commands,  int* num_executed_commands, int* last_command, int* hazard) 
+int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command) 
 {
-    
-     
-
-    int first_command;
+    int first_command=0;
     printf("\n%s-------------------------------------- CLOCK %d-------------------------------------------------------------%s\n", BLUE, clock, WHITE);
-    printf("\ncore IC: %d\n", core->IC); 
-    printf("\nPC = %d\n", core->pc);
-    printf("\n core halted %d", core->halted);
-    *hazard = detect_hazard(core, mesi_bus); 
-    printf("%s \nhazard %d\n%s ", MAGENTA, *hazard, WHITE);
-    first_command =*hazard;
+    detect_hazard(core, mesi_bus); 
+    printf("%s \nhazard %d\n%s ", MAGENTA, core->hazard, WHITE);
+    first_command = core->hazard;
     for(int i = FETCH; i<=WB;i++)
         core->pipeline_array[i]->state =i; 
 
@@ -125,7 +111,7 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* num_fetched_command
     }
     
 
-    if(*hazard>0 || core->halted )
+    if(core->hazard>0 || core->halted || core->pc >= core->IC )
     {
         
         // core->pipeline_array[first_command]->state =0; 
@@ -136,35 +122,43 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* num_fetched_command
         core->pipeline_array [0]= (Command *)malloc(sizeof(Command));
         initialize_command(core->pipeline_array[0]); 
     }
-    printf("first command %d, last cocmmand %d", first_command, *last_command); 
 
 
-    for(int i=first_command; i<=*last_command; i++)
+    for(int i=*last_command; i>=first_command; i--)
     {
 
     if(strcmp(core->pipeline_array[i]->inst, "DONE")==0) 
         continue; 
 
     printf("\n%s ---------------------------------------------------------------------------------------------------%s\n", RED, WHITE);
+    
+
     core->current_instruction = core->pipeline_array[i];
-    printf("\npipeline inst %s\n", core->pipeline_array[i]->inst);
-    state_machine( core,  mesi_bus, hazard); 
+    state_machine( core,  mesi_bus); 
     printf("state: %d\n",core->pipeline_array[i]->state );
-
     printf("\n%sState: %s %s%s\n", WHITE, GREEN, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
+    }         
 
-    }             
+
+
+
+
+
+    if(strcmp(core->pipeline_array[DECODE]->inst, "DONE")!=0 && strcmp(core->pipeline_array[DECODE]->inst, "NOP")!=0)
+    {
+        core->current_instruction = core->pipeline_array[DECODE];   
+        state_machine( core,  mesi_bus); 
+
+    }
 
     if(*last_command<WB)
         (*last_command)++; 
-    printf("last command %d\n", *last_command);
     for(int i=FETCH; i<=WB; i++)
     {
         printf("%s %s %s %s %s, ", WHITE, GREEN, core->pipeline_array[i]->inst, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
     }        
-    return finished(core); 
-    
 
+    return finished(core); 
 }
 
     

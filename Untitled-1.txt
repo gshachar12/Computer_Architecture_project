@@ -1,0 +1,62 @@
+data0: dc 0x0 *data
+data1: dc 0x1
+data2: dc 0x10
+data5: dc 0x10
+data6: dc 0xFFFF
+data4: dc 0x12345678
+data7: dc 0x0
+data9: dc 0x2
+data12: dc 0x21
+data13: dc 0xE
+
+
+main:
+ 	lw R1 R0 0x4    *R1 = 0x12345678 (MEM(4))
+	lw R2 R0 data0  *R2 = data0 = 0
+	special-nop
+	lw R4 R0 data1  *R4 = data1=0x1
+	lw R5 R0 data5  *R5 = 0x10 (address of mirror)
+	lw R6 R0 data6  *R6 = 0xFFFF ->-1
+	lw R7 R0 data0  *R7 =0x0
+	lw R8 R0 data0  *R8 = 0x0
+	lw R9 R0 data9  *R9 = 0x2
+	lw R10 R0 data0 *result = R10
+	lw R11 R0 data2 * i= R11 = 16d
+	special-nop
+	lw R12 R0 data12 *R12 = 0x21
+	lw R13 R0 data13 *R13 = 0xE
+	jr R5  *jump to 'mirror'
+	sw R10 R0 0x5 *store the data in address 0x5, as requested
+	halt *the program has ended
+
+
+mirror: 
+	addi R2 R1 0x0 			* R2 = R1
+	addi R11 R11 0xFFFF 	* i-- 
+	srli R2 R2 				* R2 >> 1
+	bnez R11 0xFFFD 		* if (R2 shifted 16 times to the right): lo
+addi R5 R5 0x0013 *start the loop
+and R2 R2 R6 *and action between 'n' and 0xFFFF, yields 'int_upper_half'
+jalr R12 *activate 'reverse' function on 'int_upper_half'
+addi R9 R9 0xFFFF *
+beqz R9 0x4
+addi R5 R5 0xFFFF
+slli R8 R8
+bnez R5 0xFFFD
+addi R5 R5 0x0010
+or R10 R10 R8
+and R2 R1 R6
+bnez R9 0x1 *branch is disabled only after the two 16 bit words have been reversed
+jr R13 *return to function 'main'
+
+
+reverse: addi R7 R0 0x0 *initialize R7 to 0
+addi R8 R0 0x0 *initialize R8 ('result') to 0
+addi R5 R5 0xFFFF *R5--
+slli R8 R8 *shift R8 one time to the left
+and R7 R2 R4 *copy to R7 the result of an and action between 'n' and 1
+or R8 R8 R7 *copy to R8 the result of an or action between 'result' and R7
+srli R2 R2 *shift 'n' one time to the right
+bnez R5 0xFFFA *the loop break condition
+addi R5 R5 0x0010 *re-initialize a loop
+jr R31 *return to the function 'mirror'

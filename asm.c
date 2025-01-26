@@ -22,7 +22,7 @@ char reg_altname[][10] = { "$zero", "$imm", "$r2", "$r3", "$r4", "$r5", "$r6", "
 char jumplabels[IMEM_SIZE][50];
 char labels[IMEM_SIZE][50];
 
-int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout)
+int interpret_file(FILE* fp_asm, FILE* fp_imemout)
 {
 	int i, last;
 	int inst, op, rd, rs, rt, imm, PC;
@@ -31,7 +31,7 @@ int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout)
 	int addr, data;
 	char line[500];
 	int line_count=0; 
-	if (!fp_asm || !fp_imemout || !fp_dmemout) {
+	if (!fp_asm || !fp_imemout) {
 		printf("ERROR: couldn't open files\n");
 		exit(1);
 	}
@@ -232,12 +232,6 @@ int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout)
 	last = DMEM_SIZE - 1;
 	while (last >= 0 && dmem[last] == 0)
 		last--;
-	for (i = 0; i <= last; i++)
-	{
-		fprintf(fp_dmemout, "%08X\n", dmem[i]);
-		printf("%08X\n", dmem[i]);
-	}
-
 
 	fseek(fp_imemout, 0, SEEK_SET);
 

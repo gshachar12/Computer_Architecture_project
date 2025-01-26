@@ -29,10 +29,10 @@ struct dsram;
 /******************************************************************************
 * Function Prototypes
 *******************************************************************************/
-void print_register_file_to_file(const char *filename, Core* core);
+void print_regout_array_to_file( Core* core);
 void BuildCommand(char * command_line, Command * com);
 int fetch_instruction(Core *core);
-int detect_raw_hazard(Core* core); 
+void detect_raw_hazard(Core* core); 
 
 void nullify_command(Command *src);
 int decode(Core *core, Command *com);

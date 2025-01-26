@@ -10,24 +10,6 @@
 #define IMEM_SIZE 1024
 #define DMEM_SIZE 1024
 
-// Global Variables
-extern int imem[IMEM_SIZE];
-extern int dmem[DMEM_SIZE];
-extern int R[16];
-
-// File Pointers
-extern FILE *fp_asm;
-extern FILE *fp_imemout;
-extern FILE *fp_dmemout;
-
-// Opcode and Register Names
-extern char op_name[][10];
-extern char reg_name[][10];
-extern char reg_altname[][10];
-
-// Labels
-extern char jumplabels[IMEM_SIZE][50];
-extern char labels[IMEM_SIZE][50];
 
 // Function Declarations
 /**
@@ -38,6 +20,6 @@ extern char labels[IMEM_SIZE][50];
  * @param dmem_file The path to the output data memory file.
  * @return 0 on success, exits on error.
  */
-int interpret_file(FILE* fp_asm, FILE* fp_imemout, FILE* fp_dmemout);
+int interpret_file(FILE* fp_asm, FILE* fp_imemout);
 
 #endif // ASM_H

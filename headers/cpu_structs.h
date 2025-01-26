@@ -41,7 +41,6 @@ typedef struct cmd {
     int rd;
     int rs;
     int rt;
-    int rm;
     int imm;  
     int btaken; 
     int state; 
@@ -84,22 +83,22 @@ typedef struct Core {
     int pc;                     // Program counter
     int IC;     
     int halted;
-    FILE* instruction_file; 
+    int hazard; 
     char* log_file;
     char* fetch_buffer; 
-    Command* current_instruction; // Current fetched instruction
+    char regout_array[NUM_REGS][9]; // Register file
+    FILE* instruction_file; 
+    FILE* regout_file;
+    FILE* status_file;
     DecodeBuffers* decode_buf;   // Decode buffers
     ExecuteBuffer* execute_buf; // Execute buffer for each core
     MemBuffer mem_buf;  // Memory buffer for each core
     WriteBackBuffer* wb_buf;
-    char register_file[NUM_REGS][9]; // Register file
     CACHE* cache; 
     MESI_bus* bus; 
-    
+    Command* current_instruction; // Current fetched instruction
     Command** instruction_array;     // Pointer to the instruction file
     Command** pipeline_array; 
- 
-
 } Core;
 
 #endif // CPU_STRUCTS_H

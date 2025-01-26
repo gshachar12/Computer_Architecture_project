@@ -1,0 +1,211 @@
+910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 0 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 1 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 2 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 3 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 4 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 5 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 6 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 017 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 7 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 8 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 9 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 10 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 11 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 12 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 13 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 14 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 15 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 16 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 17 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 18 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 19 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 20 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 21 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 22 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 017 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 23 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 017 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 24 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 017 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 25 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 26 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 27 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 28 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0910419872 FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15cycles 29 
+instructions 9
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
