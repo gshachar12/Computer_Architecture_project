@@ -168,23 +168,3 @@ int count_lines(FILE *file) {
     return line_count;
 }
 
-// Command* initialize_command()
-// {
-//         // Initialize current_instruction fields
-
-//     Command* cmd = (Command *)malloc(sizeof(Command));
-//     strcpy(cmd->inst, "NOP");
-//     cmd->opcode = 0;
-//     cmd->rd = 0;
-//     cmd->rs = 0;
-//     cmd->rt = 0;
-//     cmd->rm = 0;
-//     cmd->imm = 0;
-//     cmd->state = 0;
-//      if (cmd == NULL) {
-//             perror("Memory allocation failed for instruction_array[i]");
-//             exit(1);
-//      }
-//     return cmd; 
-// }
-

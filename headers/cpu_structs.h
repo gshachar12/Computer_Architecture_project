@@ -9,12 +9,11 @@
 #define NUM_REGS 16
 #define SIZE_REG 32
 #define MEMORY_SIZE (1 << 20) // 2^20 words
-#define NUM_CORES 4
 #define FETCH 0
 #define DECODE 1
 #define EXEC 2
 #define MEM 3
-#define WB 4
+#define WB 4 
 #define STALL 1
 
 #define INSTRUCTION_LENGTH 9
@@ -43,6 +42,7 @@ typedef struct cmd {
     int rt;
     int imm;  
     int btaken; 
+    int jump_address;
     int state; 
     int hazard; 
     ControlSignals control_signals;
@@ -86,6 +86,13 @@ typedef struct Core {
     int hazard; 
     char* log_file;
     char* fetch_buffer; 
+    int read_miss_counter; 
+    int read_hit_counter; 
+    int write_miss_counter; 
+    int write_hit_counter; 
+    int decode_stall_counter ; 
+    int mem_stall_counter ;
+    int requesting; 
     char regout_array[NUM_REGS][9]; // Register file
     FILE* instruction_file; 
     FILE* regout_file;
@@ -99,6 +106,9 @@ typedef struct Core {
     Command* current_instruction; // Current fetched instruction
     Command** instruction_array;     // Pointer to the instruction file
     Command** pipeline_array; 
+
 } Core;
+
+
 
 #endif // CPU_STRUCTS_H

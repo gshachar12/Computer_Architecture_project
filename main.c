@@ -5,93 +5,79 @@
 #include "headers/pipeline.h"
 // Function to initialize Core
 #define NUM_ARGS 32
-static int lastGrantedCore = -1;
-int read_miss_counter = 0; 
-int read_hit_counter = 0; 
-int write_miss_counter = 0; 
-int write_hit_counter = 0; 
-int decode_stall_counter = 0; 
-int mem_stall_counter =0;
+
 void log_cache_status(Core* core, int clock)
 {
    fprintf(core->status_file, "%d FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15");
    fprintf (core->status_file, "cycles %d ",clock );
    fprintf (core->status_file, "\ninstructions %d", core->IC);
-   fprintf (core->status_file, "\nread_hit %d ", read_hit_counter);
-   fprintf (core->status_file, "\nwrite_hit %d", write_hit_counter);
-   fprintf (core->status_file, "\nread_miss %d", read_miss_counter);
-   fprintf (core->status_file, "\nwrite_miss %d", write_miss_counter);
-   fprintf (core->status_file, "\ndecode_stall %d",decode_stall_counter );
-   fprintf (core->status_file, "\nmem_stall %d", mem_stall_counter);
-}
-
-bool busAvailable(MESI_bus* bus) {
-    if(bus->bus_cmd == NO_COMMAND && bus->stall == 0) {
-        return true;
-    }
-    
-    return false;
-}
-
-int roundRobinArbitrator(MESI_bus* bus, int busRequests[NUM_CORES]) {
-    if (!busAvailable(bus)) {
-        return -1;
-    }
-
-    // round robin
-    for (int i = 0; i < NUM_CORES; i++) {
-        int coreId = (lastGrantedCore + i) % NUM_CORES;
-       // if (busRequests[coreId]) {
-            lastGrantedCore = coreId;
-            return coreId;
-        //}
-    }
-    return -1;
+   fprintf (core->status_file, "\nread_hit %d ", core->read_hit_counter);
+   fprintf (core->status_file, "\nwrite_hit %d", core->write_hit_counter);
+   fprintf (core->status_file, "\nread_miss %d", core->read_miss_counter);
+   fprintf (core->status_file, "\nwrite_miss %d", core->write_miss_counter);
+   fprintf (core->status_file, "\ndecode_stall %d",core->decode_stall_counter );
+   fprintf (core->status_file, "\nmem_stall %d", core->mem_stall_counter);
 }
 
 
 int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
 {
-    printf("%d Loaded Instructions\n\n", cores[0]->IC);
+    // printf("%d Loaded Instructions\n\n", cores[0]->IC);
 
     CACHE* caches[] = {cores[0]->cache, cores[1]->cache, cores[2]->cache, cores[3]->cache};
-    Core* core = cores[0]; 
-
+    int last_commands[] = {0,0,0,0};
     const int max_cycles = 10000; // Prevent infinite loops
     int finished =0; 
     int clock =0;
-    int last_command = 0;
-    int busRequests[NUM_CORES]; 
     int core_id;
-    while(clock<max_cycles && !finished)
+
+    BusArbitratorQueue queue; 
+
+    while(clock<max_cycles&&!finished)
     {
 
         printf("\n%s-------------------------------------- CLOCK %d-------------------------------------------------------------%s\n", BLUE, clock, WHITE);
 
-        for (int core_id=0; core_id < NUM_CORES-2; core_id++)
+        for (int core_id=0; core_id < NUM_CORES; core_id++)
         {
 
-
+        
+        if (cores[0]->halted&&cores[1]->halted&&cores[2]->halted&&cores[3]->halted)
+            finished = 1; 
+            
+        if (cores[core_id]->IC == 0 || cores[core_id]->halted)
+        {
+                cores[core_id]->halted =1;
+                continue; 
+        }
         printf("\n%sRunning core: %d%s\n", BRIGHT_CYAN,core_id, WHITE );
         //core_id = roundRobinArbitrator(bus, busRequests);
         //core = cores[core_id]; 
-        finished = pipeline( cores[core_id], clock, bus, &last_command);
+        cores[core_id]->halted = pipeline( cores[core_id], clock, bus, &last_commands[core_id]);
         log_mesibus(bus, clock);
         log_cache_status(cores[core_id], clock); 
-        snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
-        printf("%s\n\n\n------------------------------------------------------------------------------------ %s\n\n", RED, WHITE, clock);
+
+        printf("%s\n\n\n----------------------------------------------------------------------------------------------------------%s\n\n", RED, WHITE, clock);
         printf("\n\n");
         }
-        
-        clock++; 
+
+        // if there is a request, bus_requests[i] is high
+        // arbitrator goes through all requests 
+        // if its not busy  
 
         
+        snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
+        
+        clock++; 
     }
 
     for (int core_id=0; core_id < NUM_CORES; core_id++)
     {
         print_regout_array_to_file(cores[core_id]);
     }
+
+
+
 }
 
 int main(int argc, char *argv[])
@@ -162,6 +148,7 @@ int main(int argc, char *argv[])
     initialize_main_memory(&main_memory, memin, memout);  // need to initialize from memin!!!!!!
     initialize_mesi_bus(&mesi_bus, bustrace);
 
+    
     for (int core_id=0; core_id < NUM_CORES; core_id++)
     {
         instruction_counts[core_id] = interpret_file(programs[core_id], imem_files[core_id]);

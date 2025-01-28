@@ -104,7 +104,7 @@ void detect_raw_hazard(Core *core) {
             case 8:
                 if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
                 {
-                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
                     return; // Hazard detected // Hazard detected
@@ -125,7 +125,7 @@ void detect_raw_hazard(Core *core) {
             case 13:
             case 14:
                 // RAW hazard detection for branch instructions
-                if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
                     return; // Hazard detected // Hazard detected
@@ -156,7 +156,7 @@ void detect_raw_hazard(Core *core) {
             // RAW hazard detection for LW (depends on rs)
                 if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
                 {
-                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
                     return; // Hazard detected // Hazard detected
@@ -173,7 +173,7 @@ void detect_raw_hazard(Core *core) {
             case 17:
                 if ((com->opcode >= 0 && com->opcode <=8) || com->opcode == 16 || com->opcode == 15)
                 {
-                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15))
+                    if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
                     return; // Hazard detected // Hazard detected
@@ -211,6 +211,8 @@ void nullify_command(Command *src) {
     src->rt = -1;
     src->imm = -1;
     src->hazard = -1;
+    src->jump_address = 0;
+    src->btaken = 0;
 
     // Copy nested structure
     // dest->control_signals = rc->control_signals;
@@ -230,7 +232,7 @@ int decode(Core *core, Command *com) {
     printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
 
-
+    detect_raw_hazard(core);
     if (core->hazard)
         { 
             printf ("\n%s waiting for hazard to end%s\n ",RED, WHITE ); 
@@ -240,7 +242,8 @@ int decode(Core *core, Command *com) {
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->regout_array[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->regout_array[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->regout_array[com->rd]);
-    printf("\nno hazard: command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value , core->decode_buf->rt_value );
+    printf("values loaded in decode: rd_val = %d, rs_val = %d, rt_val = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value, core->decode_buf->rt_value);
+    //printf("\nno hazard: command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value , core->decode_buf->rt_value );
 
     // Process the opcode and set control signals based on it
     switch (com->opcode) {
@@ -250,69 +253,79 @@ int decode(Core *core, Command *com) {
         case 3: // or
         case 4: // xor
         case 5: // mul
+            com->btaken = 0;
             break;
 
         case 6: // sll (shift left logical)
         case 7: // sra (shift right arithmetic)
         case 8: // srl (shift right logical)
+            com->btaken = 0;
             break;
 
         case 9: // beq (branch if equal)
             if(core->decode_buf->rs_value == core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;  
         case 10: // bne (branch if not equal)
             if(core->decode_buf->rs_value != core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;
         case 11: // blt (branch if less than)
             if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;
         case 12: // bgt (branch if greater than)
             if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;
 
         case 13: // ble (branch if less or equal)
             if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;
 
         case 14: // bge (branch if greater or equal)
             if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
+            else com->btaken = 0;
             break;
 
         case 15: // jal (jump and link)
+            com->btaken = 1;
 
+            
+            com->jump_address = core->pc-1;
+            printf("jump entered decode, saving in jump address:%d", com->jump_address);
             break;
 
         case 16: // lw (load word)
-
+            com->btaken = 0;
             break;
 
         case 17: // sw (store word)
-
+            com->btaken = 0;
             break;
 
         case 20: // halt
+            com->btaken = 0;
             core->halted = 1;
+            break;
 
         default:
             printf("Core %d: Unrecognized opcode: %d\n", core->core_id, com->opcode);
             break;
     }
-
+    printf("jump address in decode: %d, for opcode: %d\n", com->jump_address, com->opcode);
     if(com->btaken == 1)
         {
         core->pc = (core->decode_buf->rd_value & 0x3FF);
         printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
-        core->pipeline_array [0]= (Command *)malloc(sizeof(Command));
-        nullify_command(core->pipeline_array[FETCH]); // command in fetch mode is no longer important 
-        
         }
-
-    //printf("imm = %d\n", com->imm);
-    printf("DECODE BUFFER: rs_value: %d, rt_value: %d, rd_value: %d, rs: %d, rt: %d, rd: %d\n", core->decode_buf->rs_value, core->decode_buf->rt_value, core->decode_buf->rd_value, core->decode_buf->rs, core->decode_buf->rt, core->decode_buf->rd);
+    printf("jump address in decode: %d\n", com->jump_address);
     return 0; //decode is finished
 }
 void execute(Core *core, Command *com) {
-
+    
+    printf("------------------------jump address in exec: %d\n", com->jump_address);
     int alu_result = 0;
     int address = 0;
     int memory_or_not = 0; 
@@ -365,58 +378,28 @@ void execute(Core *core, Command *com) {
             break;
 
         case 9: // BEQ (Branch if Equal)
-            if (core->decode_buf->rs_value == core->decode_buf->rt_value) {
-                core->pc = (core->decode_buf->rd_value & 0x3FF);  // Branch calculation (multiply immediate by 4)
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 10: // BNE (Branch if Not Equal)
-            if (core->decode_buf->rs_value != core->decode_buf->rt_value) {
-                core->pc = (core->decode_buf->rd_value & 0x3FF);
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 11: // BLT (Branch if Less Than)
-            if (core->decode_buf->rs_value < core->decode_buf->rt_value) {
-                core->pc =(core->decode_buf->rd_value & 0x3FF);
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 12: // BGT (Branch if Greater Than)
-            if (core->decode_buf->rs_value > core->decode_buf->rt_value) {
-                core->pc = (core->decode_buf->rd_value & 0x3FF);
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 13: // BLE (Branch if Less or Equal)
-            if (core->decode_buf->rs_value <= core->decode_buf->rt_value) {
-                core->pc = (core->decode_buf->rd_value & 0x3FF);
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 14: // BGE (Branch if Greater or Equal)
-            if (core->decode_buf->rs_value >= core->decode_buf->rt_value) {
-                core->pc = (core->decode_buf->rd_value & 0x3FF);
-            }
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
             break;
 
         case 15: // JAL (Jump and Link)
-            *(core->regout_array[15]) = core->pc; 
-            core->pc = (core->decode_buf->rd_value & 0x3FF);  // Jump to target address
-            core->execute_buf->is_branch = 1;
-            memory_or_not = 0;
+            //alu_result = core->pc;
+            //core->pc = (core->decode_buf->rd_value & 0x3FF);  // Jump to target address
+            //core->execute_buf->is_branch = 1;
+            //memory_or_not = 0;
             break;
 
         case 16: // LW (Load Word)
@@ -454,7 +437,7 @@ void execute(Core *core, Command *com) {
     core->execute_buf->is_branch = core->execute_buf->is_branch || 0;  // Ensure default value is 0
     core->execute_buf->mem_busy = memory_or_not;  // Set mem_busy if a memory operation is in progress
     printf("EXECUTE BUFFER: %s alu_result%s: %d, destination: %d, mem_address: %d, memory_or_not: %d\n", YELLOW, WHITE,  core->execute_buf->alu_result, core->execute_buf->destination, core->execute_buf->mem_address, core->execute_buf->memory_or_not);
-
+    
 
 }
 
@@ -495,6 +478,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
 
 void writeback_state(Command *com, Core *core) {
     // Check if the instruction writes back to a register
+    printf("WRITEBACK: rd = %d, value_to_store: %d, opcode: %d, jump_address: %d, btaken: %d", com->rd, core->mem_buf.load_result, com->opcode, com->jump_address, com->btaken);
     switch (com->opcode) {
         case 0: // ADD
         case 1: // SUB
@@ -514,8 +498,8 @@ void writeback_state(Command *com, Core *core) {
         
         case 15: // JAL (Jump and Link)
             // Store the return address (PC + 1) into the link register (usually $ra or $15)
-
-            Int_2_Hex(core->pc + 1, core->regout_array[15]);
+            printf("\nwriting to register 15: %d\n", com->jump_address);
+            Int_2_Hex(com->jump_address, core->regout_array[15]);
             break;
 
         case 16: // LW (Load Word)
@@ -531,10 +515,8 @@ void writeback_state(Command *com, Core *core) {
             break;
 
         default:
-            printf("Unrecognized opcode %d for writeback.\n", com->opcode);
+            printf("opcode %d: no need for writeback.\n", com->opcode);
             break;
     }
-    core->hazard = 0; 
     core->wb_buf->finished =1;
 }
-

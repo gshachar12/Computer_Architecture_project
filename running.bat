@@ -36,6 +36,13 @@ echo Compiling initialize.c...
 gcc -c initialize.c -o obj/initialize.o
 if errorlevel 1 exit /b
 
+
+echo Compiling bus_arbitrator.c...
+
+gcc -c bus_arbitrator.c -o obj/bus_arbitrator.o
+if errorlevel 1 exit /b
+
+
 echo Compiling main.c...
 
 gcc -c main.c -o obj/main.o
@@ -43,7 +50,7 @@ if errorlevel 1 exit /b
 
 echo linking...
 REM Link the object files to create the executable inside the exe folder
-gcc obj/main.o obj/pipeline.o obj/state_machine.o obj/cache.o obj/initialize.o obj/asm.o obj/utils.o -o exe/sim.exe
+gcc obj/main.o obj/bus_arbitrator.o obj/pipeline.o obj/state_machine.o obj/cache.o obj/initialize.o obj/asm.o obj/utils.o -o exe/sim.exe
 if errorlevel 1 exit /b
 
 echo running exe...

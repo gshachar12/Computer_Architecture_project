@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#define NUM_CORES 4
 
 #include <stdio.h>
 #include <stdlib.h>

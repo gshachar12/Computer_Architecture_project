@@ -77,6 +77,7 @@ Command *copy_command(const Command *src) {
     dest->imm = src->imm;
     dest->state = src->state;
     dest->hazard = src->hazard;
+    dest->jump_address = src->jump_address;
 
     // Copy nested structure
     dest->control_signals = src->control_signals;
@@ -96,10 +97,10 @@ int finished(Core* core)
 
 int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command) 
 {
-    int first_command=0;
+    printf("\nPC=%d\n", core->pc);
     detect_hazard(core, mesi_bus); 
+    int first_command=core->hazard;
     printf("%s \nhazard %d\n%s ", MAGENTA, core->hazard, WHITE);
-    first_command = core->hazard;
     for(int i = FETCH; i<=WB;i++)
         core->pipeline_array[i]->state =i; 
 
@@ -112,7 +113,7 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
 
     if(core->hazard>0 || core->halted || core->pc >= core->IC )
     {
-        
+        printf("core hazard: %d, core halted: %d, core pc: %d, IC: %d\n", core->hazard, core->halted, core->pc, core->IC);
         // core->pipeline_array[first_command]->state =0; 
         nullify_command(core->pipeline_array[first_command]);
     }
@@ -122,7 +123,7 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
         initialize_command(core->pipeline_array[0]); 
     }
 
-
+  
     for(int i=*last_command; i>=first_command; i--)
     {
 
@@ -131,16 +132,17 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
 
     printf("\n%s ---------------------------------------------------------------------------------------------------%s\n", RED, WHITE);
     
-
     core->current_instruction = core->pipeline_array[i];
     state_machine( core,  mesi_bus); 
+    // if(core->current_instruction->opcode == 15 && i > DECODE)
+    // {
+    //     printf("%s jump address in pipeline: %d, opcode: %d %s\n",RED, core->current_instruction->jump_address, core->current_instruction->opcode, WHITE);
+    //     exit(1);
+    // }
+    //printf("%s jump address in pipeline: %d, opcode: %d %s\n",RED, core->current_instruction->jump_address, core->current_instruction->opcode, WHITE);
     printf("state: %d\n",core->pipeline_array[i]->state );
     printf("\n%sState: %s %s%s\n", WHITE, GREEN, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
-    }         
-
-
-
-
+    } 
 
 
     if(strcmp(core->pipeline_array[DECODE]->inst, "DONE")!=0 && strcmp(core->pipeline_array[DECODE]->inst, "NOP")!=0)
@@ -149,6 +151,8 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
         state_machine( core,  mesi_bus); 
 
     }
+
+  
 
     if(*last_command<WB)
         (*last_command)++; 
@@ -159,6 +163,3 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
 
     return finished(core); 
 }
-
-    
-

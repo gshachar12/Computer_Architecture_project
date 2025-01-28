@@ -1,4 +1,4 @@
-#include "headers/cache_structs.h"
+#include "headers/bus_arbitrator.h"
 #include "headers/utils.h"
 
 #define BLOCK_OFFSET_BITS 2       // log2(4) = 2 bits to index a word within a block
@@ -163,25 +163,55 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
 * Description: send command to the bus
 *******************************************************************************/
 void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
+
+
+    MESI_bus_Command *queue_command = (MESI_bus_Command *)malloc(sizeof(MESI_bus_Command));
+
     printf("Sending operation to the bus: origid: %d, cmd: %d, addr: %d, requesting_id: %d\n", origid, cmd, addr, origid);
-    printf("mesibus == NULL? %s\n", bus == NULL ? "YES" : "NO");
     printf("mesibus_data = %d\n", bus->bus_data);
     // Set bus data to arbitrary value
     bus->bus_data = 0;
-    printf("bus_data: %d\n", bus->bus_data);
 
-    // Set bus fields
-    bus->bus_origid = origid;
-    bus->bus_cmd = cmd;
-    bus->bus_addr = addr;
-    bus->bus_requesting_id = origid;
-    bus->bus_requesting_address=addr;
-    bus->busy = 1;
+    queue_command->cmd = cmd;
+    queue_command->requesting_id = origid;
+    queue_command->requesting_address = addr;
+
+
+
+    // Set bus fields if bus is available
+
+    if(!bus->busy)
+    {
+        printf("\n%s bus is free, uploading core %d to RESA bus%s\n", YELLOW, origid, WHITE);
+        if(!isQueueEmpty(bus->bus_queue))
+            {
+                queue_command = dequeue(bus->bus_queue);
+            }
+
+    
+        bus->bus_origid             = queue_command->requesting_id;
+        bus->bus_cmd                = queue_command->cmd;
+        bus->bus_addr               = queue_command->requesting_address;
+        bus->bus_requesting_id      = queue_command->requesting_id;
+        bus->bus_requesting_address = queue_command->requesting_address;
+        bus->busy = 1;
+    }
+
+    // enqueue command until the bus is free
+    else
+    {
+
+    printf("\n%s bus is taken by core %d%s\n", YELLOW, bus->bus_requesting_id, WHITE);
+
+    enqueue( bus ->bus_queue, queue_command);  // enqueue in bus arbitrator queue
+    }
+
     // Print the values after assigning them
     printf("bus_origid: %d\n", bus->bus_origid);
     printf("bus_cmd: %d\n", bus->bus_cmd);
     printf("bus_addr: %d\n", bus->bus_addr);
     printf("bus_requesting_id: %d\n", bus->bus_requesting_id);
+    return;
 }
 
 

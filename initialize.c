@@ -88,6 +88,7 @@ void initialize_mesi_bus(MESI_bus *bus, FILE *log_file)
     bus->busy=0;
     bus->logfile = log_file;
     bus->bus_requesting_address=0;
+    initializeQueue(bus->bus_queue );
     if (bus->logfile == NULL) {
         perror("Error opening log file for DSRAM");
         exit(EXIT_FAILURE);
@@ -120,6 +121,7 @@ void initialize_command(Command* cmd)
     cmd->rs = 0;
     cmd->rt = 0;
     cmd->btaken =0; 
+    cmd->jump_address = 0;
 
     cmd->imm = 0;
     cmd->state = 0;
@@ -244,9 +246,17 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
 void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename, FILE* regout, FILE* status_file) {
     core->cache = (CACHE *)malloc(sizeof(CACHE));  // Allocate memory for the Core struct
     core->core_id = core_id;
-    core->hazard = 0; 
-    core->pc = 0;
-    core->halted = 0;
+    core->hazard               = 0; 
+    core->pc                   = 0;
+    core->halted               = 0;
+    core->requesting           = 0; 
+    core->read_miss_counter    = 0; 
+    core->write_miss_counter   = 0; 
+    core->read_hit_counter     = 0; 
+    core->write_hit_counter    = 0; 
+    core->decode_stall_counter = 0; 
+    core->mem_stall_counter    = 0;
+
     core->regout_file = regout; 
     core->IC = instruction_count;
     core->instruction_file = imem_file;
