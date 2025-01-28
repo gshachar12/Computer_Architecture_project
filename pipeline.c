@@ -1,106 +1,53 @@
 #include "headers/state_machine.h"
+#include "headers/initialize.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int detect_hazard(Core *core) {
-    // Extract the buffers for easier reference
-    DecodeBuffers *decode_buf = &core->decode_buf;
-    ExecuteBuffer *execute_buf = &core->execute_buf;
-    MemBuffer *mem_buf = &core->mem_buf;
 
-    // Data Hazard Detection (Read-After-Write - RAW)
-    if ((decode_buf->rs == execute_buf->destination && execute_buf->destination != 0) ||
-        (decode_buf->rs == mem_buf->destination_register && mem_buf->destination_register != 0)) {
-        printf("Data hazard detected: RAW on rs\n");
-        return 1; // Stall
-    }
-    if ((decode_buf->rt == execute_buf->destination && execute_buf->destination != 0) ||
-        (decode_buf->rt == mem_buf->destination_register && mem_buf->destination_register != 0)) {
-        printf("Data hazard detected: RAW on rt\n");
-        return 1; // Stall
-    }
-
-    // Control Hazard Detection
-    if (decode_buf->is_branch && !execute_buf->branch_resolved) {
-        printf("Control hazard detected: Branch not resolved\n");
-        return 1; // Stall
-    }
-
-    // Structural Hazard Detection
-    if (execute_buf->mem_busy || mem_buf->destination_register != 0) {
-        printf("Structural hazard detected: Memory unit busy\n");
-        return 1; // Stall
-    }
-
-    // Write-After-Write (WAW) Hazard Detection
-    if ((decode_buf->rd == execute_buf->destination && execute_buf->destination != 0) ||
-        (decode_buf->rd == mem_buf->destination_register && mem_buf->destination_register != 0)) {
-        printf("WAW hazard detected\n");
-        return 1; // Stall
-    }
-
-    // Write-After-Read (WAR) Hazard Detection
-    if ((decode_buf->rs == mem_buf->destination_register && mem_buf->destination_register != 0) ||
-        (decode_buf->rt == mem_buf->destination_register && mem_buf->destination_register != 0)) {
-        printf("WAR hazard detected\n");
-        return 1; // Stall
-    }
-
-    // No hazards detected
-    return 0;
+void detect_hazard(Core* core, MESI_bus* bus)
+{   
+    int RAW_hazard=0; // check for RAW hazard
+    int MEM_hazard=0; // check for MEM hazard
+  
+    detect_raw_hazard(core); 
+    if(bus->busy)
+        MEM_hazard = WB;
+    core->hazard = MEM_hazard>RAW_hazard? MEM_hazard: core->hazard; 
 }
 
-
-int state_machine(Core* core, int num, char* log_file) {
-    int hazard;
+int state_machine(Core* core, MESI_bus* mesi_bus) {
     Command *com=core->current_instruction;
     switch (com->state) {
     case FETCH:
-
-        if (fetch_instruction(core,num) == -1) {
+        if (fetch_instruction(core) == -1) {
             return -1; // No more instructions to fetch
         }
 
-        modify_file_line(log_file, num + 1, "f ");
         break;
 
     case DECODE:
-        hazard = detect_hazard(core);
-        if (hazard) {
-            modify_file_line("pipeline_output->txt", num + 1, "- "); // Indicate stall
-            return STALL;
-        }
-
-        decode(core, com, core->instruction_array[num]->inst );
-        modify_file_line(log_file, num + 1, "d ");
-        printf("\nDECODE PIPELINE Command properties: ");
-        printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
+        decode(core, com);
         break;
 
     case EXEC:
-        //printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
-        printf("\npre Execute PIPELINE Command properties: ");
-        printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
         execute(core, com);
-        //printf("EXECUTE Command properties: ");
-        //printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
-
-        printf("\nExecute PIPELINE Command properties: ");
+        printf("\nExecute PIPELINE Command properties: \n");
         printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
-        modify_file_line(log_file, num + 1, "e ");
+        printf("execute buffer: mem address - %d", core->execute_buf->mem_address);
+        printf("execute buffer: alu result - %d", core->execute_buf->alu_result);
         break;
 
     case MEM:
-
-        //memory_state(com, core);
-        Memory_transaction_finished = modify_file_line(log_file, num + 1, "m ");
+        memory_state(com, core, mesi_bus);
+        // (*hazard) = detect_hazard(core, mesi_bus);
         break;
 
     case WB:
        // writeback_state(com, core);
-        modify_file_line(log_file, num + 1, "wb");
+        writeback_state(com, core);
         break;
 
     default:
@@ -108,71 +55,111 @@ int state_machine(Core* core, int num, char* log_file) {
         return -1;
     }
 
-    return hazard; // Indicate success
+    return 0; // Indicate success
 }
 
 
-int pipeline(char* log_file, Core* core) {
-    int clock = 0;
-    int num_executed_commands = 0;
-    int first_command = 0;
-    int last_command = 0;
-    int hazard = 0;
-    int output;
-    // Print the content of the array
-    printf("%d Loaded Instructions\n\n", core->IC);
-    	
-    const int max_cycles = 10000; // Prevent infinite loops
-    int i;  // Line index to be retrieved 
-    char line[MAX_LINE_LENGTH];  // Array to store the line
-    while (num_executed_commands < core -> IC) {
-        printf("%s\n\n\n-------------------------- Cycle number %d ------------------------: \n\n", BLUE, clock);
-        // Process commands in the pipeline
-        for (int j = first_command; j <= last_command; j++) {
-            printf("%d %d",j, core->IC);
-                         // Handle Write-back (WB) state
-            if (core->instruction_array[j]->state == WB) {
-                first_command++;          // Move first command forward
-                num_executed_commands++;  // Count completed commands
-            }
-            core->current_instruction = core->instruction_array[j];
-
-            output = state_machine(core, j, log_file);
-
-            printf("\n%s -------------------------- Command instruction: %s ------------------------: \n", RED, core->instruction_array[j]->inst);
-            printf("%sState: %s\n", WHITE, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->instruction_array[j]->state]);
-            printf("opcode: %d, rd: %d, rs: %d, rt: %d, imm: %d\n", core->instruction_array[j]->opcode, core->instruction_array[j]->rd,
-                            core->instruction_array[j]->rs, core->instruction_array[j]->rt, core->instruction_array[j]->imm);
-            printf("\n%s ------------------------------------------------------------------------------: \n%s", RED, WHITE);
-            // Advance command state if no stall
-            if (core->instruction_array[j]->state < WB) {  //!stall && 
-
-                core->instruction_array[j]->state++;  // Advance to next stage
-            }
-
-            // Handle end of instruction fetch
-            if (output == -1) {
-                hazard = 0; // Clear stall if no more instructions
-                break;
-            }
-        }
-            printf("%s\n\n\n------------------------------------------------------------: %s\n\n", BLUE, WHITE, clock);
-            printf("\n\n");
-        // Increment the clock cycle
-        clock++;
-
-        // If no stall and more commands exist, load the next command
-        if (!hazard && last_command < core->IC -1) {
-            last_command++;
-            modify_file_line(log_file, last_command + 1, "  ");
-        }
-
-        // Prevent infinite loops by capping the clock
-        if (clock > max_cycles) {
-            fprintf(stderr, "Error: Exceeded maximum cycles. Terminating to prevent infinite loop.\n");
-            break;
-        }
+Command *copy_command(const Command *src) {
+    // Allocate memory for the new Command
+    Command *dest = (Command *)malloc(sizeof(Command));
+    if (dest == NULL) {
+        return NULL; // Return NULL if allocation fails
     }
-    return clock;  // Return the number of clock cycles used
+
+    // Copy string
+    strcpy(dest->inst, src->inst);
+
+    // Copy primitive fields
+    dest->opcode = src->opcode;
+    dest->rd = src->rd;
+    dest->rs = src->rs;
+    dest->rt = src->rt;
+    dest->imm = src->imm;
+    dest->state = src->state;
+    dest->hazard = src->hazard;
+    dest->jump_address = src->jump_address;
+
+    // Copy nested structure
+    dest->control_signals = src->control_signals;
+
+    return dest;
 }
 
+int finished(Core* core)
+{
+
+    for(int i = FETCH; i<WB;i++)
+        if(strcmp(core->pipeline_array[i]->inst, "DONE")!=0)
+            return 0;
+    return 1; 
+
+}
+
+int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command) 
+{
+    printf("\nPC=%d\n", core->pc);
+    detect_hazard(core, mesi_bus); 
+    int first_command=core->hazard;
+    printf("%s \nhazard %d\n%s ", MAGENTA, core->hazard, WHITE);
+    for(int i = FETCH; i<=WB;i++)
+        core->pipeline_array[i]->state =i; 
+
+    for(int i=WB-1; i>=first_command; i--)
+    {
+        core->pipeline_array[i+1] = copy_command(core->pipeline_array[i]); 
+        core->pipeline_array[i+1]->state = i+1;  
+    }
+    
+
+    if(core->hazard>0 || core->halted || core->pc >= core->IC )
+    {
+        printf("core hazard: %d, core halted: %d, core pc: %d, IC: %d\n", core->hazard, core->halted, core->pc, core->IC);
+        // core->pipeline_array[first_command]->state =0; 
+        nullify_command(core->pipeline_array[first_command]);
+    }
+    else 
+    {
+        core->pipeline_array [0]= (Command *)malloc(sizeof(Command));
+        initialize_command(core->pipeline_array[0]); 
+    }
+
+  
+    for(int i=*last_command; i>=first_command; i--)
+    {
+
+    if(strcmp(core->pipeline_array[i]->inst, "DONE")==0) 
+        continue; 
+
+    printf("\n%s ---------------------------------------------------------------------------------------------------%s\n", RED, WHITE);
+    
+    core->current_instruction = core->pipeline_array[i];
+    state_machine( core,  mesi_bus); 
+    // if(core->current_instruction->opcode == 15 && i > DECODE)
+    // {
+    //     printf("%s jump address in pipeline: %d, opcode: %d %s\n",RED, core->current_instruction->jump_address, core->current_instruction->opcode, WHITE);
+    //     exit(1);
+    // }
+    //printf("%s jump address in pipeline: %d, opcode: %d %s\n",RED, core->current_instruction->jump_address, core->current_instruction->opcode, WHITE);
+    printf("state: %d\n",core->pipeline_array[i]->state );
+    printf("\n%sState: %s %s%s\n", WHITE, GREEN, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
+    } 
+
+
+    if(strcmp(core->pipeline_array[DECODE]->inst, "DONE")!=0 && strcmp(core->pipeline_array[DECODE]->inst, "NOP")!=0)
+    {
+        core->current_instruction = core->pipeline_array[DECODE];   
+        state_machine( core,  mesi_bus); 
+
+    }
+
+  
+
+    if(*last_command<WB)
+        (*last_command)++; 
+    for(int i=FETCH; i<=WB; i++)
+    {
+        printf("%s %s %s %s %s, ", WHITE, GREEN, core->pipeline_array[i]->inst, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
+    }        
+
+    return finished(core); 
+}

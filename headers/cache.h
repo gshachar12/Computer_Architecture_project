@@ -1,5 +1,5 @@
 
-#include "cache_structs.h"
+#include "bus_arbitrator.h"
 #include "utils.h"
 #ifndef CACHE_H
 #define CACHE_H
@@ -32,12 +32,13 @@ bool cache_write(CACHE *cache, uint32_t address, int data, MESI_bus *mesi_bus);
 
 //int read_from_main_memory(int *main_memory, int address);
 
-int snoop_bus(CACHE *caches[], uint32_t address, MESI_bus *bus, MainMemory *main_memory, int clock_cycle);
+int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock_cycle);
 //void init_caches(DSRAM dsrams[], TSRAM tsrams[]);
 
 int* check_shared_bus(CACHE *caches[], int origid, int address);
 
 void send_data_to_bus(MESI_bus *bus, int data, int origid, int bus_shared, int address, int requesting_id);
+void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr); 
 
 void send_data_from_main_memory_to_bus(MainMemory *main_memory, MESI_bus *bus, int address);
 

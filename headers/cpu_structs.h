@@ -9,12 +9,11 @@
 #define NUM_REGS 16
 #define SIZE_REG 32
 #define MEMORY_SIZE (1 << 20) // 2^20 words
-#define NUM_CORES 4
 #define FETCH 0
 #define DECODE 1
 #define EXEC 2
 #define MEM 3
-#define WB 4
+#define WB 4 
 #define STALL 1
 
 #define INSTRUCTION_LENGTH 9
@@ -41,9 +40,11 @@ typedef struct cmd {
     int rd;
     int rs;
     int rt;
-    int rm;
     int imm;  
+    int btaken; 
+    int jump_address;
     int state; 
+    int hazard; 
     ControlSignals control_signals;
 } Command;
 
@@ -73,20 +74,41 @@ typedef struct {
     int destination_register;  // Address of the memory operation (calculated in execute)
 } MemBuffer;
 
+typedef struct {
+    int finished;  
+} WriteBackBuffer;
+
 typedef struct Core {
     int core_id;
     int pc;                     // Program counter
-    int IC;    
+    int IC;     
+    int halted;
+    int hazard; 
+    char* log_file;
+    char* fetch_buffer; 
+    int read_miss_counter; 
+    int read_hit_counter; 
+    int write_miss_counter; 
+    int write_hit_counter; 
+    int decode_stall_counter ; 
+    int mem_stall_counter ;
+    int requesting; 
+    char regout_array[NUM_REGS][9]; // Register file
     FILE* instruction_file; 
-    Command* current_instruction; // Current fetched instruction
-    DecodeBuffers decode_buf;   // Decode buffers
-    ExecuteBuffer execute_buf; // Execute buffer for each core
+    FILE* regout_file;
+    FILE* status_file;
+    DecodeBuffers* decode_buf;   // Decode buffers
+    ExecuteBuffer* execute_buf; // Execute buffer for each core
     MemBuffer mem_buf;  // Memory buffer for each core
-    char register_file[NUM_REGS][9]; // Register file
+    WriteBackBuffer* wb_buf;
     CACHE* cache; 
-    Command** instruction_array;     // Pointer to the instruction file
     MESI_bus* bus; 
+    Command* current_instruction; // Current fetched instruction
+    Command** instruction_array;     // Pointer to the instruction file
+    Command** pipeline_array; 
 
 } Core;
+
+
 
 #endif // CPU_STRUCTS_H

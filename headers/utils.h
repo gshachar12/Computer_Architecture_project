@@ -1,16 +1,11 @@
 #ifndef UTILS_H
 #define UTILS_H
+#define NUM_CORES 4
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
-
-
-// colors
-#define GREETING "Hello, World!"
-
 
 #define COLOR_RESET "\033[0m"
 #define BLUE "\033[1;34m"
@@ -21,6 +16,16 @@
 #define CYAN "\033[1;36m"
 #define WHITE "\033[1;37m"
 #define BLACK "\033[1;30m"
+
+// Bright Colors
+#define BRIGHT_BLACK  "\033[1;30m"
+#define BRIGHT_RED    "\033[1;31m"
+#define BRIGHT_GREEN  "\033[1;32m"
+#define BRIGHT_YELLOW "\033[1;33m"
+#define BRIGHT_BLUE   "\033[1;34m"
+#define BRIGHT_MAGENTA "\033[1;35m"
+#define BRIGHT_CYAN   "\033[1;36m"
+#define BRIGHT_WHITE  "\033[1;37m"
 
 /******************************************************************************
 *utilies 
