@@ -107,12 +107,14 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for R-type instructions
                     if ((decode->rs != 0 && decode->rs == com->rd) || 
                         (decode->rt != 0 && decode->rt == com->rd)) {
                                         core->hazard = EXEC;  
+                                        core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
                 }
@@ -128,6 +130,7 @@ void detect_raw_hazard(Core *core) {
                 if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                 if ((com->opcode >= 0 && com->opcode <= 8) || com->opcode == 16)
@@ -136,6 +139,7 @@ void detect_raw_hazard(Core *core) {
                     (decode->rt != 0 && decode->rt == com->rd) ||
                     (decode->rd != 0 && decode->rd == com->rd)) {
                                         core->hazard = EXEC;  
+                                        core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
 
@@ -148,6 +152,7 @@ void detect_raw_hazard(Core *core) {
                 // RAW hazard detection for JAL (Jump and Link)
                 if (decode->rd == com->rd) {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
             }
@@ -159,12 +164,14 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for R-type instructions
                     if ((decode->rs != 0 && decode->rs == com->rd) || 
                         (decode->rt != 0 && decode->rt == com->rd)) {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
                 }
@@ -176,6 +183,7 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for Store instructions
@@ -183,6 +191,7 @@ void detect_raw_hazard(Core *core) {
                     (decode->rt != 0 && decode->rt == com->rd) ||
                     (decode->rd != 0 && decode->rd == com->rd)) {
                     core->hazard = EXEC;  
+                    core->decode_stall_counter++;
                     return; // Hazard detected
                 }
                 }

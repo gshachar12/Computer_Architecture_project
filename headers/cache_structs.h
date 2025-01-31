@@ -49,6 +49,7 @@ typedef struct {
     TSRAM* tsram; 
     int cache_id ; 
     int ack;
+    int num_stalls; 
 } CACHE;
 
 

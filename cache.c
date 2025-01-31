@@ -238,6 +238,7 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
         main_memory_stalls_counter++; 
         bus->stall =1;
         printf("\nstalling for: %d cycles\n", main_memory_stalls_counter);
+        requesting->num_stalls++;
         return 0; 
     }
 
@@ -546,8 +547,9 @@ int cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
             dsram_line->data[block_offset] = data; 
             cache->ack = 1; 
             tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-            printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+            printf("Cache write hit! Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
             log_cache_state(cache);
+
             return 1;
 
         }

@@ -25,6 +25,8 @@ void initialize_main_memory(MainMemory *main_memory, FILE *memin, FILE *memout) 
             if (index >= MAIN_MEMORY_SIZE) {
                 fprintf(stderr, "Warning: memin file contains more data than MAIN_MEMORY_SIZE. Truncating.\n");
                 break;
+
+                
             }
         }
         printf("Loaded %d addresses from memin file.\n", index);
@@ -34,7 +36,6 @@ void initialize_main_memory(MainMemory *main_memory, FILE *memin, FILE *memout) 
 
     printf("Main memory initialized with %d addresses.\n", MAIN_MEMORY_SIZE);
 }
-
 
 
 void initialize_DSRAM(DSRAM *dsram, FILE *log_file) {
@@ -147,6 +148,7 @@ void initialize_pipeline_array(Command** pipeline_array, int instruction_count)
             }
 
             return; // Exit the function to indicate failure
+
         }
         initialize_command(pipeline_array[i]);
         // pipeline_array[i]->state = i;  
@@ -225,6 +227,7 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
     // Initialize cache fields
     cache->cache_id = cache_id;
     cache->ack = 0;  // Initially no acknowledgment
+    cache->num_stalls =0; 
 
     // Allocate and initialize DSRAM and TSRAM
     cache->dsram = (DSRAM *)malloc(sizeof(DSRAM));
