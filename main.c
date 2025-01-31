@@ -16,7 +16,7 @@ void log_cache_status(Core* core, int clock)
    fprintf (core->status_file, "\nread_miss %d", core->read_miss_counter);
    fprintf (core->status_file, "\nwrite_miss %d", core->write_miss_counter);
    fprintf (core->status_file, "\ndecode_stall %d",core->decode_stall_counter );
-   fprintf (core->status_file, "\nmem_stall %d", core->mem_stall_counter);
+   fprintf (core->status_file, "\nmem_stall %d", core->cache->num_stalls);
 }
 
 
@@ -45,7 +45,7 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
         if (cores[0]->halted&&cores[1]->halted&&cores[2]->halted&&cores[3]->halted)
             finished = 1; 
             
-        if (cores[core_id]->IC == 0 || cores[core_id]->halted)
+        if (cores[core_id]->IC == 0)
         {
                 cores[core_id]->halted =1;
                 continue; 
@@ -53,7 +53,7 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
         printf("\n%sRunning core: %d%s\n", BRIGHT_CYAN,core_id, WHITE );
         //core_id = roundRobinArbitrator(bus, busRequests);
         //core = cores[core_id]; 
-        cores[core_id]->halted = pipeline( cores[core_id], clock, bus, &last_commands[core_id]);
+        pipeline( cores[core_id], clock, bus, &last_commands[core_id]);
         log_mesibus(bus, clock);
         log_cache_status(cores[core_id], clock); 
 
@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
     fclose(imem1);
     fclose(imem2);
     fclose(imem3);
-
 
     imem0 = fopen(argv[1], "rt");
 	imem1 = fopen(argv[2], "rt");

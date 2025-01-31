@@ -5,3 +5,4 @@ add $zero, $zero, $zero, 0 #pc = 3 r2=0
 halt $zero, $zero, $zero, 0 # pc = 4
 add $r9, $zero, $zero, 0 #pc = 5
 beq $r15, $zero, $zero, 0 #pc = 6 
+halt $zero, $zero, $zero, 0 # pc = 4

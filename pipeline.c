@@ -87,11 +87,12 @@ Command *copy_command(const Command *src) {
 
 int finished(Core* core)
 {
-
+  
     for(int i = FETCH; i<WB;i++)
         if(strcmp(core->pipeline_array[i]->inst, "DONE")!=0)
             return 0;
-    return 1; 
+    core->halted =1;
+    return 1;  
 
 }
 
@@ -151,8 +152,6 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
         state_machine( core,  mesi_bus); 
 
     }
-
-  
 
     if(*last_command<WB)
         (*last_command)++; 
