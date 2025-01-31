@@ -11,7 +11,7 @@ void detect_hazard(Core* core, MESI_bus* bus)
     int RAW_hazard=0; // check for RAW hazard
     int MEM_hazard=0; // check for MEM hazard
   
-    detect_raw_hazard(core); 
+    detect_raw_hazard(core); ///////////////////////////////////////////////////////////////////////////////////////////////// need to remove
     if(bus->busy)
         MEM_hazard = WB;
     core->hazard = MEM_hazard>RAW_hazard? MEM_hazard: core->hazard; 

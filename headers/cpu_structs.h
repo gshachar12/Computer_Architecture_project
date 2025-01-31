@@ -92,6 +92,7 @@ typedef struct Core {
     int write_hit_counter; 
     int decode_stall_counter ; 
     int mem_stall_counter ;
+    int num_executed_instructions;
     int requesting; 
     char regout_array[NUM_REGS][9]; // Register file
     FILE* instruction_file; 
