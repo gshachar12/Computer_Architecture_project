@@ -530,4 +530,5 @@ void writeback_state(Command *com, Core *core) {
             break;
     }
     core->wb_buf->finished =1;
+    core->num_executed_instructions++;
 }

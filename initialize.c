@@ -259,7 +259,7 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
     core->write_hit_counter    = 0; 
     core->decode_stall_counter = 0; 
     core->mem_stall_counter    = 0;
-
+    core->num_executed_instructions = 0; 
     core->regout_file = regout; 
     core->IC = instruction_count;
     core->instruction_file = imem_file;
