@@ -315,14 +315,14 @@ int decode(Core *core, Command *com) {
             break;
     }
     printf("jump address in decode: %d, for opcode: %d\n", com->jump_address, com->opcode);
-    if(com->btaken == 1)
-        {
-        core->pc = (core->decode_buf->rd_value & 0x3FF);
-        printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
-        }
-    printf("jump address in decode: %d\n", com->jump_address);
-    return 0; //decode is finished
-}
+//     if(com->btaken == 1)
+//         {
+//         core->pc = (core->decode_buf->rd_value & 0x3FF);
+//         printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
+//         }
+//    printf("jump address in decode: %d\n", com->jump_address);
+   return 0; //decode is finished
+ }
 void execute(Core *core, Command *com) {
     
     printf("------------------------jump address in exec: %d\n", com->jump_address);
@@ -368,7 +368,9 @@ void execute(Core *core, Command *com) {
             break;
 
         case 7: // SRA (Shift Right Arithmetic)
-            alu_result = core->decode_buf->rt_value >> core->decode_buf->rt_value;
+            int sa = core->decode_buf->rs_value;
+            int shift = core->decode_buf->rt_value & 31;
+            alu_result = sa >> shift;
             memory_or_not = 0;
             break;
 
