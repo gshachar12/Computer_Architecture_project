@@ -161,5 +161,12 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
         printf("%s %s %s %s %s, ", WHITE, GREEN, core->pipeline_array[i]->inst, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
     }        
 
+        if(core->pipeline_array[DECODE]->btaken == 1)
+        {
+        core->pc = (core->decode_buf->rd_value & 0x3FF);
+        printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
+        }
+
+
     return finished(core); 
 }
