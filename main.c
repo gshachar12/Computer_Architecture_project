@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
     FILE* programs[] = {program0, program1, program2, program3};
     int instruction_counts[4]; 
     initialize_main_memory(&main_memory, memin, memout);  // need to initialize from memin!!!!!!
+    printf("hello");
     initialize_mesi_bus(&mesi_bus, bustrace);
 
     
@@ -177,7 +178,7 @@ int main(int argc, char *argv[])
     simulate_cores( cores, &mesi_bus, &main_memory );
     log_main_memory(&main_memory);
 
-
+    log_cache_state(cores[0]->cache);
     // close files
 
     fclose(imem0);
