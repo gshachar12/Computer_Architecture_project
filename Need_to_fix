@@ -1,3 +1,4 @@
 1. halt doesn't stop code. maybe put 5 halts.
 2. 00000000 in the last line doesn't appear in imem0.
 3. now there is a fowarding from writeback to decode, need to be fixed.
+4. if branch is taken, action after fetch is incorrect - the instruction fetched is after the PC has changed.
