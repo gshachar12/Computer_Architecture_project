@@ -9,7 +9,7 @@
 void log_cache_status(Core* core, int clock)
 {
    fprintf(core->status_file, "%d FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15");
-   fprintf (core->status_file, "cycles %d ",clock );
+   fprintf (core->status_file, "\ncycles %d ",clock );
    fprintf (core->status_file, "\ninstructions %d", core->IC);
    fprintf (core->status_file, "\nread_hit %d ", core->read_hit_counter);
    fprintf (core->status_file, "\nwrite_hit %d", core->write_hit_counter);
