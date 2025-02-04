@@ -5,3 +5,4 @@
 5. after branch is taken, the instruction in the following PC has to be executed. when the following instruction is HALT - it is NOT executed.
 6. when shifting more times than there are zeroes to the left, a cyclic shfit occurs. is this acceptable?
 7. memin isn't loaded to the cache properly.
+8. counter testbench - synchronization between cores is not working.
