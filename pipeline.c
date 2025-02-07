@@ -10,11 +10,11 @@ void detect_hazard(Core* core, MESI_bus* bus)
 {   
     int RAW_hazard=0; // check for RAW hazard
     int MEM_hazard=0; // check for MEM hazard
-  
-    detect_raw_hazard(core); 
+ 
+    detect_raw_hazard(core); ///////////////////////////////////////////////////////////////////////////////////////////////// need to remove
     if(bus->busy)
         MEM_hazard = WB;
-    core->hazard = MEM_hazard>RAW_hazard? MEM_hazard: core->hazard; 
+    core->hazard = MEM_hazard>core->hazard? MEM_hazard: core->hazard; 
 }
 
 int state_machine(Core* core, MESI_bus* mesi_bus) {
@@ -160,6 +160,13 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
     {
         printf("%s %s %s %s %s, ", WHITE, GREEN, core->pipeline_array[i]->inst, (char *[]){"fetch", "decode", "execute", "memory", "writeback"}[core->pipeline_array[i]->state], WHITE);
     }        
+
+        if(core->pipeline_array[DECODE]->btaken == 1)
+        {
+        core->pc = (core->decode_buf->rd_value & 0x3FF);
+        printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
+        }
+
 
     return finished(core); 
 }

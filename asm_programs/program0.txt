@@ -1,7 +1,2 @@
-add $r2, $zero, $imm, 0 #pc = 0 r2=0
-add $r3, $zero, $imm, 6 #pc = 1 r3=5
-jal $r3, $zero, $zero, 0 #pc = 2, jump to pc = 5 
-add $zero, $zero, $zero, 0 #pc = 3 r2=0
-halt $zero, $zero, $zero, 0 # pc = 4
-add $r9, $zero, $zero, 0 #pc = 5
-beq $r15, $zero, $zero, 0 #pc = 6 
+lw $r6, $zero, $zero, 0             ; load the current value of the counter into $r6
+halt $zero, $zero, $zero, 0

@@ -109,6 +109,7 @@ void send_data_from_main_memory_to_bus(MainMemory *main_memory, MESI_bus *bus, i
     bus->bus_addr = address;
     bus->bus_origid = 4;
     printf("Data sent to the bus from main memory! Data: %u\n", bus->bus_data);
+    printf("%smain memory: %d\n%s", RED,main_memory->memory_data[0], WHITE);
 }
 
 /******************************************************************************
@@ -165,16 +166,16 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
 void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
 
 
-    MESI_bus_Command *queue_command = (MESI_bus_Command *)malloc(sizeof(MESI_bus_Command));
+    //MESI_bus_Command *queue_command = (MESI_bus_Command *)malloc(sizeof(MESI_bus_Command));
 
     printf("Sending operation to the bus: origid: %d, cmd: %d, addr: %d, requesting_id: %d\n", origid, cmd, addr, origid);
     printf("mesibus_data = %d\n", bus->bus_data);
     // Set bus data to arbitrary value
     bus->bus_data = 0;
 
-    queue_command->cmd = cmd;
-    queue_command->requesting_id = origid;
-    queue_command->requesting_address = addr;
+    // queue_command->cmd = cmd;
+    // queue_command->requesting_id = origid;
+    // queue_command->requesting_address = addr;
 
 
 
@@ -183,17 +184,17 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
     if(!bus->busy)
     {
         printf("\n%s bus is free, uploading core %d to RESA bus%s\n", YELLOW, origid, WHITE);
-        if(!isQueueEmpty(bus->bus_queue))
-            {
-                queue_command = dequeue(bus->bus_queue);
-            }
+        // if(!isQueueEmpty(bus->bus_queue))
+        //     {
+        //         queue_command = dequeue(bus->bus_queue);
+        //     }
 
     
-        bus->bus_origid             = queue_command->requesting_id;
-        bus->bus_cmd                = queue_command->cmd;
-        bus->bus_addr               = queue_command->requesting_address;
-        bus->bus_requesting_id      = queue_command->requesting_id;
-        bus->bus_requesting_address = queue_command->requesting_address;
+        bus->bus_origid             = origid;
+        bus->bus_cmd                = cmd;
+        bus->bus_addr               = addr;
+        bus->bus_requesting_id      = origid;
+        bus->bus_requesting_address = addr;
         bus->busy = 1;
     }
 
@@ -203,7 +204,7 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
 
     printf("\n%s bus is taken by core %d%s\n", YELLOW, bus->bus_requesting_id, WHITE);
 
-    enqueue( bus ->bus_queue, queue_command);  // enqueue in bus arbitrator queue
+    //enqueue( bus ->bus_queue, queue_command);  // enqueue in bus arbitrator queue
     }
 
     // Print the values after assigning them
@@ -249,19 +250,30 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
             bus->bus_cmd=FLUSH;
             block_offset_counter++;
             num_words_sent++;
-           
+
+            requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_data;
+            printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr],  bus->bus_addr, index);
+            if(bus->wr)
+                {        
+                requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_write_buffer; 
+                bus->wr=0;
+                }
+
+            printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
+
+
+            return 1;
         }
         if(num_words_sent == BLOCK_SIZE) // transaction finished
         {
         printf("\nfinished stalling: %d\n",main_memory_stalls_counter );
-
+        bus->busy =0;
         bus->bus_cmd = NO_COMMAND;
         block_offset_counter = 0; 
         num_words_sent=0;
         main_memory_stalls_counter = 0; 
+        return 1;
         
-        return 1; 
-
         }
         return 0; 
 
@@ -279,7 +291,16 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
         send_data_to_bus(bus, modified_cache->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, (address & ~3)+block_offset_counter, requesting->cache_id);
         requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
         main_memory->memory_data[bus->bus_addr] = bus->bus_data;
-    printf("%s flush from cache %s %d", CYAN, WHITE, main_memory->memory_data[bus->bus_addr] );
+        printf("%s flush from cache %s %d", CYAN, WHITE, main_memory->memory_data[bus->bus_addr] );
+
+
+        requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_data;
+        if(bus->wr)
+            {        
+            requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_write_buffer; 
+            bus->wr=0;
+            }
+
         bus->bus_cmd=FLUSH;
 
         block_offset_counter++;
@@ -293,6 +314,7 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
         block_offset_counter = 0; 
         num_words_sent=0;
         main_memory_stalls_counter = 0; 
+        bus->busy =0;
         return 1; 
     }
 
@@ -440,15 +462,10 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 else
                     caches[bus->bus_requesting_id]->ack= flush_from_cache(caches[bus->bus_requesting_id], caches[bus->bus_origid], main_memory, bus->bus_requesting_address, bus,  index);
                 
-                if(caches[bus->bus_requesting_id]->ack)
+
+                if(!bus->busy)
                 {
 
-                    if(bus->wr)
-                    {        
-                    caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] = bus->bus_write_buffer; 
-                    printf("write %d",    caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] );
-                    bus->wr=0;
-                    }
 
                     bus->bus_requesting_address=-1;
                     bus->bus_origid = -1;  // Set the originator of the bus transaction
@@ -459,15 +476,10 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     bus->wr=0;
                     bus->bus_write_buffer=0;
                     bus->stall=0;
-                    bus->busy =0;
-
                     log_cache_state(caches[bus->bus_requesting_id]);
-                    printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
 
                     //if (caches_owning_block_id_array!=NULL)
                       //  log_cache_state(caches[caches_owning_block_id_array[0]]);
-                
-
                 }
                 break;
 

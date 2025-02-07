@@ -88,11 +88,12 @@ void initialize_mesi_bus(MESI_bus *bus, FILE *log_file)
     bus->busy=0;
     bus->logfile = log_file;
     bus->bus_requesting_address=0;
-    initializeQueue(bus->bus_queue );
+    // initializeQueue(bus->bus_queue);
     if (bus->logfile == NULL) {
         perror("Error opening log file for DSRAM");
         exit(EXIT_FAILURE);
     }
+    printf("gdalia hamelech2");
     fprintf(bus->logfile, "Cyc Orig Cmd    Addr      Data  Shared\n");	
     printf("\nFinished initializing mesi_bus\n");
 
@@ -116,7 +117,7 @@ void initialize_command(Command* cmd)
 
 
     strcpy(cmd->inst, "NOP");
-    cmd->opcode = 0;
+    cmd->opcode = 25;
     cmd->rd = 0;
     cmd->rs = 0;
     cmd->rt = 0;
@@ -193,6 +194,7 @@ void initialize_instruction_array(Command** instruction_array, int instruction_c
 
 
     }
+    
 
 }
 
@@ -243,7 +245,7 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
     initialize_TSRAM(cache->tsram, TSRAM_log_filename);
 }
 
-void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename, FILE* regout, FILE* status_file) {
+void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename, FILE* regout, FILE* status_file, FILE* trace_file) {
     core->cache = (CACHE *)malloc(sizeof(CACHE));  // Allocate memory for the Core struct
     core->core_id = core_id;
     core->hazard               = 0; 
@@ -261,6 +263,8 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
     core->IC = instruction_count;
     core->instruction_file = imem_file;
     core->status_file = status_file; 
+    core->trace_file = trace_file; 
+
         // Allocate memory for instruction_array (pointer to an array of Command pointers)
     core->instruction_array = (Command **)malloc(instruction_count * sizeof(Command *));
     if (core->instruction_array == NULL) {

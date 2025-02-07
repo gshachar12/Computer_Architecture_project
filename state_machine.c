@@ -271,11 +271,11 @@ int decode(Core *core, Command *com) {
             else com->btaken = 0;
             break;
         case 11: // blt (branch if less than)
-            if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            if(core->decode_buf->rs_value < core->decode_buf->rt_value) com->btaken = 1;
             else com->btaken = 0;
             break;
         case 12: // bgt (branch if greater than)
-            if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
+            if(core->decode_buf->rs_value > core->decode_buf->rt_value) com->btaken = 1;
             else com->btaken = 0;
             break;
 
@@ -315,20 +315,22 @@ int decode(Core *core, Command *com) {
             break;
     }
     printf("jump address in decode: %d, for opcode: %d\n", com->jump_address, com->opcode);
-    if(com->btaken == 1)
-        {
-        core->pc = (core->decode_buf->rd_value & 0x3FF);
-        printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
-        }
-    printf("jump address in decode: %d\n", com->jump_address);
-    return 0; //decode is finished
-}
+//     if(com->btaken == 1)
+//         {
+//         core->pc = (core->decode_buf->rd_value & 0x3FF);
+//         printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
+//         }
+//    printf("jump address in decode: %d\n", com->jump_address);
+   return 0; //decode is finished
+ }
 void execute(Core *core, Command *com) {
     
     printf("------------------------jump address in exec: %d\n", com->jump_address);
     int alu_result = 0;
     int address = 0;
     int memory_or_not = 0; 
+    int sa;
+    int shift;
     printf("\nentered exec: %s\n", com->inst);
     switch (com->opcode) {
         case 0: // ADD (R-type)
@@ -363,17 +365,21 @@ void execute(Core *core, Command *com) {
             break;
 
         case 6: // SLL (Shift Left Logical)
-            alu_result = core->decode_buf->rt_value << core->decode_buf->rt_value;
+            alu_result = core->decode_buf->rs_value << core->decode_buf->rt_value;
+            alu_result = alu_result;
             memory_or_not = 0;
             break;
 
         case 7: // SRA (Shift Right Arithmetic)
-            alu_result = core->decode_buf->rt_value >> core->decode_buf->rt_value;
+            sa = core->decode_buf->rs_value;
+            shift = core->decode_buf->rt_value & 31;
+            alu_result = sa >> shift;
             memory_or_not = 0;
             break;
 
         case 8: // SRL (Shift Right Logical)
-            alu_result = (unsigned int)core->decode_buf->rt_value >>core->decode_buf->rt_value;
+            alu_result = (unsigned)core->decode_buf->rs_value >>core->decode_buf->rt_value;
+            alu_result = alu_result;
             memory_or_not = 0;
             break;
 
@@ -442,7 +448,6 @@ void execute(Core *core, Command *com) {
 }
 
 void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
-
     uint32_t data = 0;
     // If memory access is required (i.e., for Load/Store operations)
     core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
@@ -454,7 +459,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
 
             bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile
 
-            if (core->cache->ack) {
+            if (!mesi_bus->busy) {
                 core->mem_buf.load_result = data;  // Store loaded data in the buffer
                 printf("Memory Read- Data is ready: Loaded value %d from address %d\n", core->mem_buf.load_result, core->execute_buf->mem_address);
 
@@ -477,6 +482,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
 }
 
 void writeback_state(Command *com, Core *core) {
+    uint32_t tag, index, block_offset;
     // Check if the instruction writes back to a register
     printf("WRITEBACK: rd = %d, value_to_store: %d, opcode: %d, jump_address: %d, btaken: %d", com->rd, core->mem_buf.load_result, com->opcode, com->jump_address, com->btaken);
     switch (com->opcode) {
@@ -504,8 +510,9 @@ void writeback_state(Command *com, Core *core) {
 
         case 16: // LW (Load Word)
             // Write the loaded data to the destination register
-  
-            Int_2_Hex(core->mem_buf.load_result, core->regout_array[core->mem_buf.destination_register]);
+            get_cache_address_parts(core->execute_buf->mem_address, &tag, &index, &block_offset);
+            CacheLine *dsram_line = &core->cache->dsram->cache[index];
+            Int_2_Hex(dsram_line->data[block_offset], core->regout_array[core->mem_buf.destination_register]);
             break;
 
         case 17: // SW (Store Word) - No write-back to register

@@ -92,14 +92,16 @@ typedef struct Core {
     int write_hit_counter; 
     int decode_stall_counter ; 
     int mem_stall_counter ;
+    int num_executed_instructions;
     int requesting; 
     char regout_array[NUM_REGS][9]; // Register file
+    FILE* trace_file; 
     FILE* instruction_file; 
     FILE* regout_file;
     FILE* status_file;
+    MemBuffer mem_buf; 
     DecodeBuffers* decode_buf;   // Decode buffers
     ExecuteBuffer* execute_buf; // Execute buffer for each core
-    MemBuffer mem_buf;  // Memory buffer for each core
     WriteBackBuffer* wb_buf;
     CACHE* cache; 
     MESI_bus* bus; 
