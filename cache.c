@@ -248,10 +248,10 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
             printf("\nblocks sent: %d\n", block_offset_counter );
             send_data_from_main_memory_to_bus(main_memory, bus, (address & ~3) + block_offset_counter);
             bus->bus_cmd=FLUSH;
-            block_offset_counter++;
             num_words_sent++;
-
-            requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_data;
+            printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_data, index, block_offset_counter, bus->bus_addr);
+            requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
+            block_offset_counter++;
             printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr],  bus->bus_addr, index);
             if(bus->wr)
                 {        

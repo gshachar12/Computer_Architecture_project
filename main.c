@@ -206,10 +206,10 @@ int main(int argc, char *argv[])
     printf("%d Loaded Instructions\n\n", cores[0]->IC);
     simulate_cores( cores, &mesi_bus, &main_memory );
     log_main_memory(&main_memory);
-
+    
+    printf("-------------------value in dsram address 5:%d\n", cores[0]->cache->dsram->cache->data[8]);
     log_cache_state(cores[0]->cache);
     // close files
-
     fclose(imem0);
     fclose(imem1);
     fclose(imem2);
