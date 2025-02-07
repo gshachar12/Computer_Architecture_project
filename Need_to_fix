@@ -6,3 +6,4 @@
 6. when shifting more times than there are zeroes to the left, a cyclic shfit occurs. is this acceptable?
 7. memin isn't loaded to the cache properly.
 8. counter testbench - synchronization between cores is not working.
+9. in mesi file - the request for action isnt shown, only flush.
