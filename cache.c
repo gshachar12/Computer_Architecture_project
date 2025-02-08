@@ -240,6 +240,7 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
         bus->stall =1;
         printf("\nstalling for: %d cycles\n", main_memory_stalls_counter);
         return 0; 
+
     }
 
     else
@@ -421,7 +422,6 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                         
                             caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)                    
-                            
                             caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] = bus->bus_write_buffer; 
                             
                         }

@@ -12,7 +12,7 @@ void detect_hazard(Core* core, MESI_bus* bus)
     int MEM_hazard=0; // check for MEM hazard
  
     detect_raw_hazard(core); ///////////////////////////////////////////////////////////////////////////////////////////////// need to remove
-    if(bus->busy)
+    if(bus->busy && !core->cache -> memory_stalls)
         MEM_hazard = WB;
     core->hazard = MEM_hazard>core->hazard? MEM_hazard: core->hazard; 
 }

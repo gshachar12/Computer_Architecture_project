@@ -457,22 +457,42 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
         if (com->opcode == 16) {  // Load Word (LW)
             // Cache read instead of direct memory read for the specific core
 
-            bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile
-
-            if (!mesi_bus->busy) {
+            bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile        
+            if (hit) {
+                core->read_hit_counter++; 
                 core->mem_buf.load_result = data;  // Store loaded data in the buffer
                 printf("Memory Read- Data is ready: Loaded value %d from address %d\n", core->mem_buf.load_result, core->execute_buf->mem_address);
-
+                core->cache -> memory_stalls = 0; 
             } 
+
+            else 
+            {
+                core->read_miss_counter++; 
+                core->cache -> memory_stalls = 1; 
+            }
 
         }
 
         if (com->opcode == 17) {  // Store Word (SW)
             // Cache write instead of direct memory write for the specific core
-            cache_write(core->cache, core->execute_buf->mem_address, core->execute_buf->rd_value,  mesi_bus);  // Pass the logfile
+            
+            bool hit = cache_write(core->cache, core->execute_buf->mem_address, core->execute_buf->rd_value,  mesi_bus);  // Pass the logfile
+
+            if(hit)
+            {
+                core->write_hit_counter++; 
+                core->cache -> memory_stalls = 0; 
+            }
+
+            else
+            {
+                core->write_miss_counter++; 
+                core->cache -> memory_stalls = 1; 
+            }
             printf("Memory Write (Cache): Stored value %d to address %d\n", core->execute_buf->rd_value, core->execute_buf->mem_address);
         }
     } else {
+
         // No memory operation, directly use the ALU result
         core->mem_buf.load_result = core->execute_buf->alu_result;
         core->mem_buf.destination_register = core->execute_buf->destination;
@@ -526,4 +546,5 @@ void writeback_state(Command *com, Core *core) {
             break;
     }
     core->wb_buf->finished =1;
+    core->cache -> memory_stalls = 0; 
 }

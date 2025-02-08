@@ -47,7 +47,7 @@ typedef struct {
 typedef struct {
     DSRAM* dsram; 
     TSRAM* tsram; 
-
+    int memory_stalls; 
     int cache_id ; 
     int ack;
     int num_stalls; 

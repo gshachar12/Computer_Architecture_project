@@ -1,7 +1,0 @@
-add $r3, $zero, $imm, 127         ; each core performs 512 / 4 = 128 increments
-lw $r6, $zero, $zero, 0             ; load the current value of the counter into $r6
-add $r6, $r6, $imm, 1           ; increment the counter
-sw $r6, $zero, $zero, 0             ; write the updated value back to memory
-bne $imm, $zero, $r3, 1   ; repeat if not all increments are complete
-sub $r3, $r3, $imm, 1            ; decrement the loop counter
-halt $zero, $zero, $zero, 0                     ; end program execution
