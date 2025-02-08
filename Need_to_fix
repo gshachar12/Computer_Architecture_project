@@ -7,3 +7,4 @@
 7. memin isn't loaded to the cache properly.
 8. counter testbench - synchronization between cores is not working.
 9. in mesi file - the request isnt shown, only flush.
+10. instructions which are not lw\sw do not stall in memory stage!
