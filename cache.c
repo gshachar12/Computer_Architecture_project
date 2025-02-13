@@ -6,6 +6,7 @@
 #define TAG_BITS (32 - INDEX_BITS - BLOCK_OFFSET_BITS) // Assuming 32-bit address
 #define NUM_CACHES 2
  int num_words_sent=0; 
+ int modified_block_memory_write = 0; 
  uint32_t block_offset_counter=0; 
  int main_memory_stalls_counter=0; 
 
@@ -253,7 +254,7 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
             printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_data, index, block_offset_counter, bus->bus_addr);
             requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
             
-            printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr], block_offset_counter,  bus->bus_addr, index);
+            //printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr], block_offset_counter,  bus->bus_addr, index);
             if(bus->wr)
                 {        
                 requesting->dsram->cache[0].data[bus->bus_addr] = bus->bus_write_buffer; 
@@ -282,6 +283,27 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
 
     }
 }
+
+int write_to_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t index)
+    {
+        int requesting_address;
+        if (requesting->tsram->cache[index].mesi_state == MODIFIED)
+        {
+            if(modified_block_memory_write < BLOCK_SIZE)
+            {
+                requesting_address = requesting->tsram->cache->tag<<24 + index <<6; 
+                main_memory->memory_data[requesting_address + modified_block_memory_write];
+                modified_block_memory_write++; 
+            }
+            else
+            {
+                modified_block_memory_write =0; 
+            }
+    
+        }
+        return 0; 
+
+    }
 
 
 int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_memory, uint32_t address, MESI_bus *bus, uint32_t index)

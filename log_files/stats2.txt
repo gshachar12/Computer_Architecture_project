@@ -5,7 +5,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 2 
 instructions a3fecc
@@ -14,7 +14,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 3 
 instructions a3fecc
@@ -23,7 +23,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 4 
 instructions a3fecc
@@ -32,7 +32,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 5 
 instructions a3fecc
@@ -41,7 +41,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 6 
 instructions a3fecc
@@ -50,221 +50,932 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 7 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 8 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 9 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles a 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles b 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles c 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles d 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles e 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles f 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 10 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 11 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 12 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 13 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 14 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 15 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 16 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 17 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 18 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 19 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 1a 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 1b 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 1c 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 1d 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
 
 cycles 1e 
 instructions a3fecc
 read_hit 0 
 write_hit 0
 read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 1f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 20 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 21 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 22 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 23 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 24 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 25 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 26 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 27 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 28 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 29 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 2f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
 write_miss 1
 decode_stall 0
-mem_stall 323532
+mem_stall b7b6b5b4
+
+cycles 30 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 31 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 32 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 33 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 34 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 35 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 36 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 37 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 38 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 39 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 3f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 40 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 41 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 42 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 43 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 44 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 45 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 46 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 47 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 48 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 49 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 4f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 50 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 51 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 52 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 53 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 54 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 55 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 56 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 57 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 58 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 59 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 5f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 60 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 61 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 62 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 63 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 64 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 65 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 66 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 67 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 68 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 69 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 6a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 6b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 6c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
+
+cycles 6d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall b7b6b5b4
 

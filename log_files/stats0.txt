@@ -5,7 +5,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 2 
 instructions 7f
@@ -14,7 +14,7 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 3 
 instructions 7f
@@ -23,248 +23,959 @@ write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 4 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
+read_miss 1
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 5 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
+read_miss 1
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 6 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
+read_miss 1
 write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 7 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 8 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 9 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles a 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles b 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles c 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles d 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles e 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles f 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 10 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 11 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 12 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 13 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 14 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 15 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 16 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 17 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 1
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 18 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 19 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 1a 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 1b 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 1c 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 1d 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
-write_miss 1
+read_miss 2
+write_miss 0
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
 
 cycles 1e 
 instructions 7f
 read_hit 0 
 write_hit 0
-read_miss 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 1f 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 20 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 21 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 22 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 23 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 24 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 25 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 26 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 27 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 28 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 29 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2a 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2b 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2c 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2d 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2e 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 2f 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 30 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 31 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 32 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 33 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 34 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 35 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 36 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 37 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 38 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 39 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3a 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3b 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3c 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3d 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3e 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 3f 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 40 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 41 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 42 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 43 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 0
+decode_stall 0
+mem_stall 3020302
+
+cycles 44 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
 write_miss 1
 decode_stall 0
-mem_stall 3010302
+mem_stall 3020302
+
+cycles 45 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 46 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 47 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 48 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 49 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4a 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4b 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4c 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4d 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4e 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 4f 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 50 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 51 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 52 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 53 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 54 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 55 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 56 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 57 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 1
+decode_stall 0
+mem_stall 3020302
+
+cycles 58 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 59 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5a 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5b 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5c 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5d 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5e 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 5f 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 60 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 61 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 62 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 63 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 64 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 65 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 66 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 67 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 68 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 69 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 6a 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 6b 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 6c 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
+
+cycles 6d 
+instructions 7f
+read_hit 0 
+write_hit 0
+read_miss 2
+write_miss 2
+decode_stall 0
+mem_stall 3020302
 

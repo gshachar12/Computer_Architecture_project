@@ -46,4 +46,6 @@ void dsram_read_data_from_bus(CACHE *cache, int address, MESI_bus *bus);
 
 void dsram_write_data_to_bus(CACHE *cache, int address, MESI_bus *bus);
 
+int write_to_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t index);
+
 #endif // CACHE_STRUCTS_H
