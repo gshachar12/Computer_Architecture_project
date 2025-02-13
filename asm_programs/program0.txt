@@ -1,4 +1,4 @@
 #this code stores core id into Mem[CoreId]. 
-add $r4, $imm, $zero, 1;
+add $r4, $imm, $zero, 0;
 sw $r4, $r4, $zero, 0;
 halt $zero, $zero, $zero, 0;
