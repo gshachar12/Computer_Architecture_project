@@ -1,0 +1,270 @@
+cycles 1 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 2 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 3 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 4 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 5 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 6 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 0
+
+cycles 7 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 8 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 9 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles a 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles b 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles c 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles d 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles e 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles f 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 10 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 11 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 12 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 13 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 14 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 15 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 16 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 17 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 18 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 19 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 1a 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 1b 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 1c 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 1d 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+
+cycles 1e 
+instructions 0
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 0
+

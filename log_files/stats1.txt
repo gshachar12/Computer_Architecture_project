@@ -1,1071 +1,270 @@
 cycles 1 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 2 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 3 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 4 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 5 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 6 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
 write_miss 0
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 7 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 8 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 9 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles a 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles b 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles c 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles d 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles e 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles f 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 10 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 11 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 12 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 13 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 14 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 15 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 16 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 17 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 18 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 19 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 1a 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 1b 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 1c 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 1d 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
+mem_stall 2100210
 
 cycles 1e 
-instructions ef62a0
+instructions 400000
 read_hit 0 
 write_hit 0
 read_miss 0
-write_miss 0
+write_miss 1
 decode_stall 0
-mem_stall 0
-
-cycles 1f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 20 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 21 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 22 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 23 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 24 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 25 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 26 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 27 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 28 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 29 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2a 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2b 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2c 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2d 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2e 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 2f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 30 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 31 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 32 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 33 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 34 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 35 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 36 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 37 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 38 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 39 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3a 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3b 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3c 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3d 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3e 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 3f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 40 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 41 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 42 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 43 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 44 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 45 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 46 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 47 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 48 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 49 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4a 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4b 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4c 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4d 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4e 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 4f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 50 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 51 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 52 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 53 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 54 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 55 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 56 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 57 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 58 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 59 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5a 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5b 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5c 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5d 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5e 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 5f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 60 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 61 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 62 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 63 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 64 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 65 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 66 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 67 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 68 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 69 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6a 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6b 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6c 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6d 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6e 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 6f 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 70 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 71 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 72 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 73 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 74 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 75 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 76 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
-
-cycles 77 
-instructions ef62a0
-read_hit 0 
-write_hit 0
-read_miss 0
-write_miss 0
-decode_stall 0
-mem_stall 0
+mem_stall 2100210
 

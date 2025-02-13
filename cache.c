@@ -252,17 +252,18 @@ int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t 
             num_words_sent++;
             printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_data, index, block_offset_counter, bus->bus_addr);
             requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
-            block_offset_counter++;
-            printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr],  bus->bus_addr, index);
+            
+            printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr], block_offset_counter,  bus->bus_addr, index);
             if(bus->wr)
                 {        
-                requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_write_buffer; 
+                requesting->dsram->cache[0].data[bus->bus_addr] = bus->bus_write_buffer; 
+                printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_write_buffer, index, block_offset_counter, bus->bus_addr);
                 bus->wr=0;
                 }
 
             printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
 
-
+            block_offset_counter++;
             return 1;
         }
         if(num_words_sent == BLOCK_SIZE) // transaction finished

@@ -123,6 +123,9 @@ void initialize_command(Command* cmd)
     cmd->rt = 0;
     cmd->btaken =0; 
     cmd->jump_address = 0;
+    cmd->rd_value = 0;
+    cmd->rs_value = 0;
+    cmd->rt_value = 0;
 
     cmd->imm = 0;
     cmd->state = 0;
@@ -220,6 +223,7 @@ void initialize_core_buffers(Core* core)
     core->execute_buf->is_branch = 0;
     core->mem_buf.load_result = 0;
     core->mem_buf.destination_register = 0;
+    core->mem_buf.address = 0;
     core->wb_buf->finished=0; 
 }
 void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename, int cache_id)

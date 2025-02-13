@@ -45,6 +45,9 @@ typedef struct cmd {
     int jump_address;
     int state; 
     int hazard; 
+    int rd_value;
+    int rs_value;
+    int rt_value;
     ControlSignals control_signals;
 } Command;
 
@@ -71,7 +74,8 @@ typedef struct {
 
 typedef struct {
     int load_result;   // Result from memory (after read)
-    int destination_register;  // Address of the memory operation (calculated in execute)
+    int destination_register;  // 
+    int address;
 } MemBuffer;
 
 typedef struct {

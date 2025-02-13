@@ -1,0 +1,270 @@
+cycles 1 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 2 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 3 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 4 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 5 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 6 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 0
+decode_stall 0
+mem_stall 323532
+
+cycles 7 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 8 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 9 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles f 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 10 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 11 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 12 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 13 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 14 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 15 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 16 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 17 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 18 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 19 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 1a 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 1b 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 1c 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 1d 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+
+cycles 1e 
+instructions a3fecc
+read_hit 0 
+write_hit 0
+read_miss 0
+write_miss 1
+decode_stall 0
+mem_stall 323532
+

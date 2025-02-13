@@ -242,6 +242,9 @@ int decode(Core *core, Command *com) {
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->regout_array[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->regout_array[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->regout_array[com->rd]);
+    com->rd_value = core->decode_buf->rd_value;
+    com->rs_value = core->decode_buf->rs_value;
+    com->rt_value = core->decode_buf->rt_value;
     printf("values loaded in decode: rd_val = %d, rs_val = %d, rt_val = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value, core->decode_buf->rt_value);
     //printf("\nno hazard: command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value , core->decode_buf->rt_value );
 
@@ -451,12 +454,13 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
     uint32_t data = 0;
     // If memory access is required (i.e., for Load/Store operations)
     core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
+    core->mem_buf.address = core->execute_buf->mem_address; 
     printf("core->execute_buf->memory_or_not: %d, address: %d, data(if writing): %d\n", core->execute_buf->memory_or_not, core->execute_buf->mem_address, core->execute_buf->rd_value);
     if (core->execute_buf->memory_or_not == 1) {  // Memory operation indicator (load/store)
 
         if (com->opcode == 16) {  // Load Word (LW)
             // Cache read instead of direct memory read for the specific core
-
+            
             bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile        
             if (hit) {
                 core->read_hit_counter++; 
@@ -496,6 +500,7 @@ void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
         // No memory operation, directly use the ALU result
         core->mem_buf.load_result = core->execute_buf->alu_result;
         core->mem_buf.destination_register = core->execute_buf->destination;
+        //core->mem_buf.address = core->execute_buf->mem_address; 
         printf("\ncore->mem_buf %d\n", core->mem_buf.load_result);
         printf("No memory operation needed.\n");
     }
@@ -530,9 +535,11 @@ void writeback_state(Command *com, Core *core) {
 
         case 16: // LW (Load Word)
             // Write the loaded data to the destination register
-            get_cache_address_parts(core->execute_buf->mem_address, &tag, &index, &block_offset);
+            printf("destination register : %d", core->mem_buf.address);
+            get_cache_address_parts(core->mem_buf.address, &tag, &index, &block_offset);
+            //printf("\naddress: %d\n", com->rs_value + com->rt_value);
             CacheLine *dsram_line = &core->cache->dsram->cache[index];
-            Int_2_Hex(dsram_line->data[block_offset], core->regout_array[core->mem_buf.destination_register]);
+            Int_2_Hex(dsram_line->data[block_offset], core->regout_array[com->rd]);
             break;
 
         case 17: // SW (Store Word) - No write-back to register
