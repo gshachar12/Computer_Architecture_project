@@ -9,3 +9,4 @@
 9. in mesi file - the request isnt shown, only flush.
 10. instructions which are not lw\sw do not stall in memory stage!
 11. no flush when importing a new block with the same index in cache.
+12. cant run a program only on core no. 1!!
