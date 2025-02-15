@@ -6,6 +6,7 @@
 #define TAG_BITS (32 - INDEX_BITS - BLOCK_OFFSET_BITS) // Assuming 32-bit address
 #define NUM_CACHES 2
  int num_words_sent=0; 
+ int modified_block_memory_write = 0; 
  uint32_t block_offset_counter=0; 
  int main_memory_stalls_counter=0; 
 
@@ -109,6 +110,7 @@ void send_data_from_main_memory_to_bus(MainMemory *main_memory, MESI_bus *bus, i
     bus->bus_addr = address;
     bus->bus_origid = 4;
     printf("Data sent to the bus from main memory! Data: %u\n", bus->bus_data);
+    printf("%smain memory: %d\n%s", RED,main_memory->memory_data[0], WHITE);
 }
 
 /******************************************************************************
@@ -165,16 +167,16 @@ int* check_shared_bus(CACHE* caches[], int origid, int address) {
 void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
 
 
-    MESI_bus_Command *queue_command = (MESI_bus_Command *)malloc(sizeof(MESI_bus_Command));
+    //MESI_bus_Command *queue_command = (MESI_bus_Command *)malloc(sizeof(MESI_bus_Command));
 
     printf("Sending operation to the bus: origid: %d, cmd: %d, addr: %d, requesting_id: %d\n", origid, cmd, addr, origid);
     printf("mesibus_data = %d\n", bus->bus_data);
     // Set bus data to arbitrary value
     bus->bus_data = 0;
 
-    queue_command->cmd = cmd;
-    queue_command->requesting_id = origid;
-    queue_command->requesting_address = addr;
+    // queue_command->cmd = cmd;
+    // queue_command->requesting_id = origid;
+    // queue_command->requesting_address = addr;
 
 
 
@@ -183,17 +185,17 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
     if(!bus->busy)
     {
         printf("\n%s bus is free, uploading core %d to RESA bus%s\n", YELLOW, origid, WHITE);
-        if(!isQueueEmpty(bus->bus_queue))
-            {
-                queue_command = dequeue(bus->bus_queue);
-            }
+        // if(!isQueueEmpty(bus->bus_queue))
+        //     {
+        //         queue_command = dequeue(bus->bus_queue);
+        //     }
 
     
-        bus->bus_origid             = queue_command->requesting_id;
-        bus->bus_cmd                = queue_command->cmd;
-        bus->bus_addr               = queue_command->requesting_address;
-        bus->bus_requesting_id      = queue_command->requesting_id;
-        bus->bus_requesting_address = queue_command->requesting_address;
+        bus->bus_origid             = origid;
+        bus->bus_cmd                = cmd;
+        bus->bus_addr               = addr;
+        bus->bus_requesting_id      = origid;
+        bus->bus_requesting_address = addr;
         bus->busy = 1;
     }
 
@@ -203,7 +205,7 @@ void send_op_to_bus(MESI_bus *bus, int origid, BusOperation cmd, int addr) {
 
     printf("\n%s bus is taken by core %d%s\n", YELLOW, bus->bus_requesting_id, WHITE);
 
-    enqueue( bus ->bus_queue, queue_command);  // enqueue in bus arbitrator queue
+    //enqueue( bus ->bus_queue, queue_command);  // enqueue in bus arbitrator queue
     }
 
     // Print the values after assigning them
@@ -229,42 +231,97 @@ void send_data_to_bus(MESI_bus *bus, int data, int origid, int bus_shared, int a
     bus->bus_requesting_id = requesting_id;   
 }
 
+int write_to_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t index)
+    {
+        static int requesting_address;
+        static int modified_flag;
+
+        if(modified_block_memory_write == 0)
+        {
+            printf("tag for first iteration: %d", requesting->tsram->cache[index].tag);
+            if (requesting->tsram->cache[index].mesi_state == MODIFIED)
+            modified_flag = 1;
+            else 
+            modified_flag = 0;
+        }
+
+        printf("mesi state: %d, modified flag = %d\n", requesting->tsram->cache[index].mesi_state, modified_flag);
+        if (modified_flag)
+        {
+            //modified_flag = 1;
+            
+            if(modified_block_memory_write < BLOCK_SIZE)
+            {
+                if(modified_block_memory_write == 0)
+                {
+                    requesting_address = requesting->tsram->cache[index].tag<<8 | index <<2; 
+                }  
+            
+                printf("\nindex: %d tag: %d\n", index,requesting->tsram->cache[index].tag ); 
+                main_memory->memory_data[requesting_address + modified_block_memory_write] = requesting->dsram->cache->data[(requesting_address + modified_block_memory_write)%CACHE_SIZE];
+                printf("\n%s modified address %d data %d%s\n", YELLOW, requesting_address + modified_block_memory_write, main_memory->memory_data[requesting_address + modified_block_memory_write], WHITE ); 
+                modified_block_memory_write++; 
+            }
+
+    
+        }
+        return 0; 
+
+    }
+
+
 
 int flush_from_main_memory(CACHE *requesting, MainMemory* main_memory, uint32_t address, MESI_bus *bus, uint32_t index)
 {
-
+    
      if(main_memory_stalls_counter<MAIN_MEMORY_STALLS) //empty stalls for fetching data from main memory
     {
+        write_to_main_memory(requesting, main_memory, index);
         main_memory_stalls_counter++; 
         bus->stall =1;
         printf("\nstalling for: %d cycles\n", main_memory_stalls_counter);
-        requesting->num_stalls++;
+        requesting->tsram->cache[index].tag = address >> (BLOCK_OFFSET_BITS + INDEX_BITS); //was added to fix tag problems
         return 0; 
+
     }
 
     else
     {   bus->stall =0;
         if(num_words_sent<BLOCK_SIZE){
             printf("\nblocks sent: %d\n", block_offset_counter );
+            printf("test for or:%d\n", (address & ~3) + block_offset_counter);
             send_data_from_main_memory_to_bus(main_memory, bus, (address & ~3) + block_offset_counter);
             bus->bus_cmd=FLUSH;
-            block_offset_counter++;
             num_words_sent++;
-           
+            printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_data, index, block_offset_counter, bus->bus_addr);
+            requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
+            
+            //printf("read %d, block offset %d, index %d", requesting->dsram->cache[index].data[bus->bus_addr], block_offset_counter,  bus->bus_addr, index);
+            if(bus->wr)
+                {        
+                requesting->dsram->cache[0].data[bus->bus_requesting_address%CACHE_SIZE] = bus->bus_write_buffer; 
+                printf("data: %d, stored into index:%d, with offset:%d, bus_addr:%d\n", bus->bus_write_buffer, index, block_offset_counter, bus->bus_addr);
+                //bus->wr=0;
+                }
+
+            printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
+
+            block_offset_counter++;
         }
         if(num_words_sent == BLOCK_SIZE) // transaction finished
         {
         printf("\nfinished stalling: %d\n",main_memory_stalls_counter );
-
+        bus->busy =0;
         bus->bus_cmd = NO_COMMAND;
         block_offset_counter = 0; 
         num_words_sent=0;
+        modified_block_memory_write =0; 
         main_memory_stalls_counter = 0; 
+        requesting -> memory_stalls = 0; 
+       
         
-        return 1; 
-
         }
-        return 0; 
+        return 1; 
 
 
     }
@@ -280,7 +337,16 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
         send_data_to_bus(bus, modified_cache->dsram->cache[index].data[block_offset_counter], bus->bus_origid, 1, (address & ~3)+block_offset_counter, requesting->cache_id);
         requesting->dsram->cache[index].data[block_offset_counter] = bus->bus_data;
         main_memory->memory_data[bus->bus_addr] = bus->bus_data;
-    printf("%s flush from cache %s %d", CYAN, WHITE, main_memory->memory_data[bus->bus_addr] );
+        printf("%s flush from cache %s %d", CYAN, WHITE, main_memory->memory_data[bus->bus_addr] );
+
+
+        requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_data;
+        if(bus->wr)
+            {        
+            requesting->dsram->cache[index].data[bus->bus_addr] = bus->bus_write_buffer; 
+            bus->wr=0;
+            }
+
         bus->bus_cmd=FLUSH;
 
         block_offset_counter++;
@@ -294,6 +360,7 @@ int flush_from_cache(CACHE *requesting, CACHE* modified_cache, MainMemory* main_
         block_offset_counter = 0; 
         num_words_sent=0;
         main_memory_stalls_counter = 0; 
+        bus->busy =0;
         return 1; 
     }
 
@@ -400,7 +467,6 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                         
                             caches[bus->bus_requesting_id]->ack= flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus,  index);
                             caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache (will be modified later)                    
-                            
                             caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] = bus->bus_write_buffer; 
                             
                         }
@@ -429,7 +495,9 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     {
                         //fetch from main memory 
                         caches[bus->bus_requesting_id]->ack=flush_from_main_memory(caches[bus->bus_requesting_id], main_memory, bus->bus_requesting_address, bus, index); 
-                        caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache
+                        printf("---------ack: %d", caches[bus->bus_requesting_id]->ack);
+                        if(caches[bus->bus_requesting_id]->ack)
+                            caches[bus->bus_requesting_id]->tsram->cache[index].mesi_state = MODIFIED;  // Data is exclusive in the requesting cache
                     }
 
                     break;
@@ -441,15 +509,10 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                 else
                     caches[bus->bus_requesting_id]->ack= flush_from_cache(caches[bus->bus_requesting_id], caches[bus->bus_origid], main_memory, bus->bus_requesting_address, bus,  index);
                 
-                if(caches[bus->bus_requesting_id]->ack)
+
+                if(!bus->busy)
                 {
 
-                    if(bus->wr)
-                    {        
-                    caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] = bus->bus_write_buffer; 
-                    printf("write %d",    caches[bus->bus_requesting_id]->dsram->cache[index].data[block_offset] );
-                    bus->wr=0;
-                    }
 
                     bus->bus_requesting_address=-1;
                     bus->bus_origid = -1;  // Set the originator of the bus transaction
@@ -460,15 +523,10 @@ int snoop_bus(CACHE *caches[], MESI_bus *bus, MainMemory *main_memory, int clock
                     bus->wr=0;
                     bus->bus_write_buffer=0;
                     bus->stall=0;
-                    bus->busy =0;
-
                     log_cache_state(caches[bus->bus_requesting_id]);
-                    printf("%s                    \nreceived ack\n                        %s",YELLOW, WHITE );
 
                     //if (caches_owning_block_id_array!=NULL)
                       //  log_cache_state(caches[caches_owning_block_id_array[0]]);
-                
-
                 }
                 break;
 
@@ -539,6 +597,7 @@ int cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
     // Snooping the bus to maintain cache coherence
     cache->ack = 0; 
     // Check if it's a cache hit
+    printf("tsram: %d, tsramtag: %d, tag: %d\n", tsram_line->mesi_state, tsram_line->tag, tag);
     if (tsram_line->mesi_state != INVALID && tsram_line->tag == tag) {
         //printf("cache hit, tag:%d, tsram_state:%d\n", tsram_line->tag, tsram_line->mesi_state);
         if(tsram_line->mesi_state == MODIFIED || tsram_line->mesi_state == EXCLUSIVE)
@@ -547,9 +606,8 @@ int cache_write(CACHE* cache, uint32_t address,int data, MESI_bus *mesi_bus) {
             dsram_line->data[block_offset] = data; 
             cache->ack = 1; 
             tsram_line->mesi_state = MODIFIED;  // Transition to MODIFIED because the cache line has been updated
-            printf("Cache write hit! Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
+            printf("Cache write hit!Block is now : Modified! Data written to index %u, block offset %u\n", index, block_offset);
             log_cache_state(cache);
-
             return 1;
 
         }

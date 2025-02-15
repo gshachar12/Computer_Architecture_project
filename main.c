@@ -8,7 +8,6 @@
 
 void log_cache_status(Core* core, int clock)
 {
-   //fprintf(core->status_file, "%d FETCH DECODE EXEC MEM WB R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15");
    fprintf (core->status_file, "cycles %x ",clock+1 );
    fprintf (core->status_file, "\ninstructions %x", core->num_executed_instructions);
    fprintf (core->status_file, "\nread_hit %x ", core->read_hit_counter);
@@ -17,12 +16,44 @@ void log_cache_status(Core* core, int clock)
    fprintf (core->status_file, "\nwrite_miss %x", core->write_miss_counter);
    fprintf (core->status_file, "\ndecode_stall %x",core->decode_stall_counter );
    fprintf (core->status_file, "\nmem_stall %x", core->cache->num_stalls);
-   fprintf (core->status_file, "\nmem_stall %x", core->cache->num_stalls);
-   fprintf (core->status_file, "\n\n", core->cache->num_stalls);
-
-
+   fprintf (core->status_file, "\n\n");
 }
 
+
+void log_trace(Core* core, int clock)
+{
+   fprintf (core->trace_file, "CYCLE FETCH      DECODE    EXEC         MEM      WB              ");
+   for(int i=2; i<=15; i++)
+   {
+    fprintf (core->trace_file, "R%d           ", i);
+ 
+   }
+
+   fprintf (core->trace_file, "\n%05d  ", clock);
+
+   for(int i=FETCH; i<=WB; i++)
+   {
+
+    
+     if(strcmp(core->pipeline_array[i]->inst, "DONE")==0 || strcmp(core->pipeline_array[i]->inst, "NOP")==0)
+    {
+     fprintf (core->trace_file, "----------  ");
+     continue; 
+    }
+
+    fprintf (core->trace_file, "%s  ", core->pipeline_array[i]->inst);
+   }
+
+
+   fprintf (core->trace_file, "   ", clock);
+
+    for (int i = 2; i < NUM_REGS; i++) 
+    {
+        fprintf(core->trace_file, "%s ", core->regout_array[i]);
+    }
+    fprintf (core->trace_file, "\n\n");
+
+}   
 
 int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
 {
@@ -30,7 +61,7 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
 
     CACHE* caches[] = {cores[0]->cache, cores[1]->cache, cores[2]->cache, cores[3]->cache};
     int last_commands[] = {0,0,0,0};
-    const int max_cycles = 10000; // Prevent infinite loops
+    const int max_cycles = 1000000; // Prevent infinite loops
     int finished =0; 
     int clock =0;
     int core_id;
@@ -55,23 +86,18 @@ int simulate_cores( Core* cores[], MESI_bus* bus, MainMemory* main_memory)
                 continue; 
         }
         printf("\n%sRunning core: %d%s\n", BRIGHT_CYAN,core_id, WHITE );
-        //core_id = roundRobinArbitrator(bus, busRequests);
-        //core = cores[core_id]; 
-        pipeline( cores[core_id], clock, bus, &last_commands[core_id]);
-        log_mesibus(bus, clock);
+      
+        cores[core_id]->halted = pipeline( cores[core_id], clock, bus, &last_commands[core_id]);
         log_cache_status(cores[core_id], clock); 
+        log_trace(cores[core_id], clock); 
 
         printf("%s\n\n\n----------------------------------------------------------------------------------------------------------%s\n\n", RED, WHITE, clock);
         printf("\n\n");
         }
 
-        // if there is a request, bus_requests[i] is high
-        // arbitrator goes through all requests 
-        // if its not busy  
-
         
         snoop_bus(caches, bus, main_memory, clock); //main memory data should be fetched to cache0
-        
+        log_mesibus(bus, clock); 
         clock++; 
     }
 
@@ -144,13 +170,13 @@ int main(int argc, char *argv[])
     main_memory.memory_data = (int *)malloc(MAIN_MEMORY_SIZE * sizeof(int));
     FILE* dsram_log_files[] = {dsram0_logfile, dsram1_logfile, dsram2_logfile, dsram3_logfile};
     FILE* tsram_log_files[] = {tsram0_logfile, tsram1_logfile, tsram2_logfile, tsram3_logfile};
+    FILE* trace_log_files[] = {core0trace, core1trace,  core2trace, core3trace}; 
     FILE* imem_files[] = {imem0, imem1, imem2, imem3};
     FILE* status_files[] = {stats0, stats1, stats2, stats3}; 
     FILE* register_files[] = {regout0, regout1, regout2, regout3};
     FILE* programs[] = {program0, program1, program2, program3};
     int instruction_counts[4]; 
     initialize_main_memory(&main_memory, memin, memout);  // need to initialize from memin!!!!!!
-    printf("hello");
     initialize_mesi_bus(&mesi_bus, bustrace);
 
     
@@ -172,7 +198,7 @@ int main(int argc, char *argv[])
 
     for(int core_id = 0; core_id<NUM_CORES;core_id++)
     {
-        initialize_core(cores[core_id], core_id,  instruction_counts[core_id] ,  imem_files[core_id], dsram_log_files[core_id], tsram_log_files[core_id], register_files[core_id], status_files[core_id]);
+        initialize_core(cores[core_id], core_id,  instruction_counts[core_id] ,  imem_files[core_id], dsram_log_files[core_id], tsram_log_files[core_id], register_files[core_id], status_files[core_id], trace_log_files[core_id]);
         printf("Core %d initialized.\n", core_id);
     }
 
@@ -180,10 +206,10 @@ int main(int argc, char *argv[])
     printf("%d Loaded Instructions\n\n", cores[0]->IC);
     simulate_cores( cores, &mesi_bus, &main_memory );
     log_main_memory(&main_memory);
-
+    
+    printf("-------------------value in dsram address 5:%d\n", cores[0]->cache->dsram->cache->data[8]);
     log_cache_state(cores[0]->cache);
     // close files
-
     fclose(imem0);
     fclose(imem1);
     fclose(imem2);

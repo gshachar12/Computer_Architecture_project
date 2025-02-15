@@ -10,11 +10,12 @@ void detect_hazard(Core* core, MESI_bus* bus)
 {   
     int RAW_hazard=0; // check for RAW hazard
     int MEM_hazard=0; // check for MEM hazard
-  
+ 
     detect_raw_hazard(core); ///////////////////////////////////////////////////////////////////////////////////////////////// need to remove
-    if(bus->busy)
+    printf("\nbus busy: %d, memory stalls: %d\n", bus->busy, core->cache->memory_stalls); 
+    if(bus->busy && core->cache -> memory_stalls)
         MEM_hazard = WB;
-    core->hazard = MEM_hazard>RAW_hazard? MEM_hazard: core->hazard; 
+    core->hazard = MEM_hazard>core->hazard? MEM_hazard: core->hazard; 
 }
 
 int state_machine(Core* core, MESI_bus* mesi_bus) {
@@ -87,12 +88,11 @@ Command *copy_command(const Command *src) {
 
 int finished(Core* core)
 {
-  
+
     for(int i = FETCH; i<WB;i++)
         if(strcmp(core->pipeline_array[i]->inst, "DONE")!=0)
             return 0;
-    core->halted =1;
-    return 1;  
+    return 1; 
 
 }
 
@@ -153,6 +153,8 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
 
     }
 
+  
+
     if(*last_command<WB)
         (*last_command)++; 
     for(int i=FETCH; i<=WB; i++)
@@ -166,6 +168,6 @@ int pipeline(Core* core, int clock, MESI_bus* mesi_bus, int* last_command)
         printf("\n\nBranch taken. PC=%d\n\n", core->pc); 
         }
 
-
+    
     return finished(core); 
 }

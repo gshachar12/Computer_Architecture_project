@@ -79,7 +79,7 @@ void detect_raw_hazard(Core *core) {
 
     Command* decode = core->pipeline_array[DECODE]; // Decode stage instruction
     int decode_opcode = decode->opcode;
-    printf("\nDecode buffer: rd %d  rs %d rt %d \n", decode->rd, decode->rs, decode->rt);
+    //printf("\nDecode buffer: rd %d  rs %d rt %d \n", decode->rd, decode->rs, decode->rt);
 
     // Iterate over pipeline stages from EXEC to WB
     for (int i = EXEC; i < WB; i++) {
@@ -89,7 +89,7 @@ void detect_raw_hazard(Core *core) {
             continue; // Skip null instructions
         }
 
-        printf("\nPipeline stage %d: rd %d  rs %d rt %d \n", i, com->rd, com->rs, com->rt);
+        //printf("\nPipeline stage %d: rd %d  rs %d rt %d \n", i, com->rd, com->rs, com->rt);
 
         // Check for hazards based on opcode
         switch (decode_opcode) {
@@ -107,14 +107,12 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for R-type instructions
                     if ((decode->rs != 0 && decode->rs == com->rd) || 
                         (decode->rt != 0 && decode->rt == com->rd)) {
                                         core->hazard = EXEC;  
-                                        core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
                 }
@@ -130,7 +128,6 @@ void detect_raw_hazard(Core *core) {
                 if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                 if ((com->opcode >= 0 && com->opcode <= 8) || com->opcode == 16)
@@ -139,7 +136,6 @@ void detect_raw_hazard(Core *core) {
                     (decode->rt != 0 && decode->rt == com->rd) ||
                     (decode->rd != 0 && decode->rd == com->rd)) {
                                         core->hazard = EXEC;  
-                                        core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
 
@@ -152,7 +148,6 @@ void detect_raw_hazard(Core *core) {
                 // RAW hazard detection for JAL (Jump and Link)
                 if (decode->rd == com->rd) {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
             }
@@ -164,14 +159,12 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for R-type instructions
                     if ((decode->rs != 0 && decode->rs == com->rd) || 
                         (decode->rt != 0 && decode->rt == com->rd)) {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                 }
                 }
@@ -183,7 +176,6 @@ void detect_raw_hazard(Core *core) {
                     if(com->opcode == 15 && (decode->rs == 15 ||decode->rt == 15 || decode->rd == 15))
                     {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected // Hazard detected
                     }
                     // General RAW hazard detection for Store instructions
@@ -191,7 +183,6 @@ void detect_raw_hazard(Core *core) {
                     (decode->rt != 0 && decode->rt == com->rd) ||
                     (decode->rd != 0 && decode->rd == com->rd)) {
                     core->hazard = EXEC;  
-                    core->decode_stall_counter++;
                     return; // Hazard detected
                 }
                 }
@@ -232,13 +223,13 @@ int decode(Core *core, Command *com) {
     // Build the Command struct from the command line
     BuildCommand(com->inst, com);
     Int_2_Hex(com->imm, core->regout_array[1]);
-    printf("\nentered decode: %s\n", com->inst);
+    //printf("\nentered decode: %s\n", com->inst);
     //printf("opcode of com is: %d\n", com->opcode);
 
     core->decode_buf->rs = com->rs;
     core->decode_buf->rt = com->rt;
     core->decode_buf->rd = com->rd;
-    printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
+    //printf("command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", com->opcode, com->rd, com->rs, com->rt, com->imm);
 
 
     detect_raw_hazard(core);
@@ -251,6 +242,9 @@ int decode(Core *core, Command *com) {
     core->decode_buf->rs_value = Hex_2_Int_2s_Comp(core->regout_array[com->rs]);
     core->decode_buf->rt_value = Hex_2_Int_2s_Comp(core->regout_array[com->rt]);
     core->decode_buf->rd_value = Hex_2_Int_2s_Comp(core->regout_array[com->rd]);
+    com->rd_value = core->decode_buf->rd_value;
+    com->rs_value = core->decode_buf->rs_value;
+    com->rt_value = core->decode_buf->rt_value;
     printf("values loaded in decode: rd_val = %d, rs_val = %d, rt_val = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value, core->decode_buf->rt_value);
     //printf("\nno hazard: command decoded: opcode = %d, rd = %d, rs = %d, rt = %d, imm = %d\n", core->decode_buf->rd_value, core->decode_buf->rs_value , core->decode_buf->rt_value );
 
@@ -280,11 +274,11 @@ int decode(Core *core, Command *com) {
             else com->btaken = 0;
             break;
         case 11: // blt (branch if less than)
-            if(core->decode_buf->rs_value <= core->decode_buf->rt_value) com->btaken = 1;
+            if(core->decode_buf->rs_value < core->decode_buf->rt_value) com->btaken = 1;
             else com->btaken = 0;
             break;
         case 12: // bgt (branch if greater than)
-            if(core->decode_buf->rs_value >= core->decode_buf->rt_value) com->btaken = 1;
+            if(core->decode_buf->rs_value > core->decode_buf->rt_value) com->btaken = 1;
             else com->btaken = 0;
             break;
 
@@ -338,6 +332,8 @@ void execute(Core *core, Command *com) {
     int alu_result = 0;
     int address = 0;
     int memory_or_not = 0; 
+    int sa;
+    int shift;
     printf("\nentered exec: %s\n", com->inst);
     switch (com->opcode) {
         case 0: // ADD (R-type)
@@ -372,19 +368,21 @@ void execute(Core *core, Command *com) {
             break;
 
         case 6: // SLL (Shift Left Logical)
-            alu_result = core->decode_buf->rt_value << core->decode_buf->rt_value;
+            alu_result = core->decode_buf->rs_value << core->decode_buf->rt_value;
+            alu_result = alu_result;
             memory_or_not = 0;
             break;
 
         case 7: // SRA (Shift Right Arithmetic)
-            int sa = core->decode_buf->rs_value;
-            int shift = core->decode_buf->rt_value & 31;
+            sa = core->decode_buf->rs_value;
+            shift = core->decode_buf->rt_value & 31;
             alu_result = sa >> shift;
             memory_or_not = 0;
             break;
 
         case 8: // SRL (Shift Right Logical)
-            alu_result = (unsigned int)core->decode_buf->rt_value >>core->decode_buf->rt_value;
+            alu_result = (unsigned)core->decode_buf->rs_value >>core->decode_buf->rt_value;
+            alu_result = alu_result;
             memory_or_not = 0;
             break;
 
@@ -453,41 +451,63 @@ void execute(Core *core, Command *com) {
 }
 
 void memory_state(Command *com, Core *core, MESI_bus* mesi_bus) {
-
     uint32_t data = 0;
     // If memory access is required (i.e., for Load/Store operations)
     core->mem_buf.destination_register = core->execute_buf->destination;  // Store destination register for writing back
+    core->mem_buf.address = core->execute_buf->mem_address; 
     printf("core->execute_buf->memory_or_not: %d, address: %d, data(if writing): %d\n", core->execute_buf->memory_or_not, core->execute_buf->mem_address, core->execute_buf->rd_value);
     if (core->execute_buf->memory_or_not == 1) {  // Memory operation indicator (load/store)
 
         if (com->opcode == 16) {  // Load Word (LW)
             // Cache read instead of direct memory read for the specific core
-
-            bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile
-
-            if (core->cache->ack) {
+            
+            bool hit = cache_read(core->cache, core->execute_buf->mem_address, &data, mesi_bus);  // Pass the logfile        
+            if (hit) {
+                core->read_hit_counter++; 
                 core->mem_buf.load_result = data;  // Store loaded data in the buffer
                 printf("Memory Read- Data is ready: Loaded value %d from address %d\n", core->mem_buf.load_result, core->execute_buf->mem_address);
-
+                core->cache -> memory_stalls = 0; 
             } 
+
+            else 
+            {
+                core->read_miss_counter++; 
+                core->cache -> memory_stalls = 1; 
+            }
 
         }
 
         if (com->opcode == 17) {  // Store Word (SW)
             // Cache write instead of direct memory write for the specific core
-            cache_write(core->cache, core->execute_buf->mem_address, core->execute_buf->rd_value,  mesi_bus);  // Pass the logfile
+            
+            bool hit = cache_write(core->cache, core->execute_buf->mem_address, core->execute_buf->rd_value,  mesi_bus);  // Pass the logfile
+
+            if(hit)
+            {
+                core->write_hit_counter++; 
+                core->cache -> memory_stalls = 0; 
+            }
+
+            else
+            {
+                core->write_miss_counter++; 
+                core->cache -> memory_stalls = 1; 
+            }
             printf("Memory Write (Cache): Stored value %d to address %d\n", core->execute_buf->rd_value, core->execute_buf->mem_address);
         }
     } else {
+
         // No memory operation, directly use the ALU result
         core->mem_buf.load_result = core->execute_buf->alu_result;
         core->mem_buf.destination_register = core->execute_buf->destination;
+        //core->mem_buf.address = core->execute_buf->mem_address; 
         printf("\ncore->mem_buf %d\n", core->mem_buf.load_result);
         printf("No memory operation needed.\n");
     }
 }
 
 void writeback_state(Command *com, Core *core) {
+    uint32_t tag, index, block_offset;
     // Check if the instruction writes back to a register
     printf("WRITEBACK: rd = %d, value_to_store: %d, opcode: %d, jump_address: %d, btaken: %d", com->rd, core->mem_buf.load_result, com->opcode, com->jump_address, com->btaken);
     switch (com->opcode) {
@@ -515,8 +535,11 @@ void writeback_state(Command *com, Core *core) {
 
         case 16: // LW (Load Word)
             // Write the loaded data to the destination register
-  
-            Int_2_Hex(core->mem_buf.load_result, core->regout_array[core->mem_buf.destination_register]);
+            printf("destination register : %d", core->mem_buf.address);
+            get_cache_address_parts(core->mem_buf.address, &tag, &index, &block_offset);
+            //printf("\naddress: %d\n", com->rs_value + com->rt_value);
+            CacheLine *dsram_line = &core->cache->dsram->cache[index];
+            Int_2_Hex(dsram_line->data[block_offset], core->regout_array[com->rd]);
             break;
 
         case 17: // SW (Store Word) - No write-back to register
@@ -530,5 +553,5 @@ void writeback_state(Command *com, Core *core) {
             break;
     }
     core->wb_buf->finished =1;
-    core->num_executed_instructions++;
+    core->cache -> memory_stalls = 0; 
 }

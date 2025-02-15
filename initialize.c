@@ -25,8 +25,6 @@ void initialize_main_memory(MainMemory *main_memory, FILE *memin, FILE *memout) 
             if (index >= MAIN_MEMORY_SIZE) {
                 fprintf(stderr, "Warning: memin file contains more data than MAIN_MEMORY_SIZE. Truncating.\n");
                 break;
-
-                
             }
         }
         printf("Loaded %d addresses from memin file.\n", index);
@@ -36,6 +34,7 @@ void initialize_main_memory(MainMemory *main_memory, FILE *memin, FILE *memout) 
 
     printf("Main memory initialized with %d addresses.\n", MAIN_MEMORY_SIZE);
 }
+
 
 
 void initialize_DSRAM(DSRAM *dsram, FILE *log_file) {
@@ -63,7 +62,7 @@ void initialize_TSRAM(TSRAM *tsram, FILE *log_file) {
 
     // Initialize cache state and tags
     for (int i = 0; i < NUM_BLOCKS; i++) {
-        tsram->cache[i].tag = 0;  // Clear the tag
+        tsram->cache[i].tag = 0;  // Clear the tag 
         tsram->cache[i].mesi_state = INVALID;  // Set state to INVALID
     }
     tsram->cycle_count = 0;  // Reset cycle count
@@ -89,11 +88,12 @@ void initialize_mesi_bus(MESI_bus *bus, FILE *log_file)
     bus->busy=0;
     bus->logfile = log_file;
     bus->bus_requesting_address=0;
-    initializeQueue(bus->bus_queue );
+    // initializeQueue(bus->bus_queue);
     if (bus->logfile == NULL) {
         perror("Error opening log file for DSRAM");
         exit(EXIT_FAILURE);
     }
+    printf("gdalia hamelech2");
     fprintf(bus->logfile, "Cyc Orig Cmd    Addr      Data  Shared\n");	
     printf("\nFinished initializing mesi_bus\n");
 
@@ -117,12 +117,15 @@ void initialize_command(Command* cmd)
 
 
     strcpy(cmd->inst, "NOP");
-    cmd->opcode = 0;
+    cmd->opcode = 25;
     cmd->rd = 0;
     cmd->rs = 0;
     cmd->rt = 0;
     cmd->btaken =0; 
     cmd->jump_address = 0;
+    cmd->rd_value = 0;
+    cmd->rs_value = 0;
+    cmd->rt_value = 0;
 
     cmd->imm = 0;
     cmd->state = 0;
@@ -148,7 +151,6 @@ void initialize_pipeline_array(Command** pipeline_array, int instruction_count)
             }
 
             return; // Exit the function to indicate failure
-
         }
         initialize_command(pipeline_array[i]);
         // pipeline_array[i]->state = i;  
@@ -195,6 +197,7 @@ void initialize_instruction_array(Command** instruction_array, int instruction_c
 
 
     }
+    
 
 }
 
@@ -220,6 +223,7 @@ void initialize_core_buffers(Core* core)
     core->execute_buf->is_branch = 0;
     core->mem_buf.load_result = 0;
     core->mem_buf.destination_register = 0;
+    core->mem_buf.address = 0;
     core->wb_buf->finished=0; 
 }
 void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_filename, int cache_id)
@@ -227,7 +231,6 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
     // Initialize cache fields
     cache->cache_id = cache_id;
     cache->ack = 0;  // Initially no acknowledgment
-    cache->num_stalls =0; 
 
     // Allocate and initialize DSRAM and TSRAM
     cache->dsram = (DSRAM *)malloc(sizeof(DSRAM));
@@ -246,7 +249,7 @@ void initialize_cache(CACHE* cache, FILE *DSRAM_log_filename, FILE *TSRAM_log_fi
     initialize_TSRAM(cache->tsram, TSRAM_log_filename);
 }
 
-void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename, FILE* regout, FILE* status_file) {
+void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_file, FILE* DSRAM_log_filename, FILE* TSRAM_log_filename, FILE* regout, FILE* status_file, FILE* trace_file) {
     core->cache = (CACHE *)malloc(sizeof(CACHE));  // Allocate memory for the Core struct
     core->core_id = core_id;
     core->hazard               = 0; 
@@ -259,11 +262,12 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
     core->write_hit_counter    = 0; 
     core->decode_stall_counter = 0; 
     core->mem_stall_counter    = 0;
-    core->num_executed_instructions = 0; 
     core->regout_file = regout; 
     core->IC = instruction_count;
     core->instruction_file = imem_file;
     core->status_file = status_file; 
+    core->trace_file = trace_file; 
+
         // Allocate memory for instruction_array (pointer to an array of Command pointers)
     core->instruction_array = (Command **)malloc(instruction_count * sizeof(Command *));
     if (core->instruction_array == NULL) {
@@ -281,7 +285,6 @@ void initialize_core(Core* core, int core_id, int instruction_count, FILE* imem_
     core->execute_buf = (ExecuteBuffer *)malloc(instruction_count * sizeof(ExecuteBuffer));
     core->wb_buf = (WriteBackBuffer *)malloc(instruction_count * sizeof(WriteBackBuffer));
 
- 
 
     initialize_instruction_array(core->instruction_array, core->IC, core->instruction_file); 
     initialize_pipeline_array(core->pipeline_array, 5); 
